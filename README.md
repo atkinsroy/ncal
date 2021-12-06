@@ -17,7 +17,7 @@ Example Month View | Notes
 Example Year View | Notes
 :--- | :---
 ![](/images/2021-12-06-095702.png) | Specifying a year without a month to show the entire year. Ignored if month with 'f' or 'p' is also specified. Use -Highlight to display month headings and today in another colour. Supported colours are red, yellow, blue, green, magenta, cyan and white. 'None' can also be specified to remove the default highlight.
-![](/images/2021-12-06-095735.png) | Display Julian Days (days one-based, numbered from 1st January)
+![](/images/2021-12-06-095735.png) | Display Julian Days (days one-based, numbered from 1st January). This can be used with -month, -year, -three, -before and -after.
 ![](/images/2021-12-06-095927.png) | With either month or year view, additional months can be added in front of and behind the specified month(s) with -Before and -After respectively. This works with -Month, -Year and -Three. Show week numbers (beneath each week column) using -Week.
 ![](/images/2021-12-06-100948.png) | Example displaying a calendar in Urdu. 813 locales have been tested, with localised month names and day abbreviations being used. 
 ![](/images/2021-12-06-101044.png) | Example displaying a calendar in Russian
