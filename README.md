@@ -2,7 +2,7 @@
 
 This command displays calendar information similar to the Linux ncal command. It implements most of the main functionality, including the ability to display multiple months, years, week numbers and with today highlighted in various colours.
 
-Note: ncal requires PowerShell V7.2.0 (using $PSStyle) to show highlighing. Previous versions work, but -Highlight doesn't do anything. This could be fixed to support old versions, but onwards and upwards.
+Note: ncal requires PowerShell V7.2.0 (using $PSStyle) to show highlighting. It will work with previous versions, but -Highlight doesn't do anything. This could be fixed to support old versions, but onwards and upwards.
 
 Here are some examples of ncal usage:
 
