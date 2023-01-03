@@ -10,10 +10,9 @@ I have added -FullDayName to **ncal** and -MonthPerRow in both commands. By defa
 
 ## Globalization
 
-**ncal** and **cal** have been tested with all 813 locales and it works well with most. With some languages, there might be alignment issues with day of the week due to longer abbreviated day names or for some locales using extended character sets. 
+**ncal** and **cal** have been tested with all 813 locales and they work well with most of them. For languages with double width character sets (like Kanji and other Asian character sets), both utilities display correctly aligned calendars. However, right-to-left languages do not appear to have particularly good support in Windows. For example, in the VS code terminal, characters are aligned correctly, but are shown in reverse and are left justified. In Windows terminal, RTL characters are correctly showned right-to-left but alignment is pretty buggy. I suspect this is a terminal rendering issue rather than .NET support. For example, month headings are correctly centred, but when they are concatenated together and displayed in Windows Terminal, month names "bleed" into the white space of an adjacent month. For this reason, I have not attempted to "fix" RTL languages like Arabic, Persian, Hebrew, etc. If support improves here, I may revisit.
 
-### Note:
-Persian locales, fa, fa-AF (Afghanistan) and fa-IR (Iran), all use the Persian Calendar. This is a solar Hijri calendar and starts from the year of the Hijri, which corrosponds to 622 C.E. This is different to the Hijri Calendar, which is a solar based calendar and is used typically for religious purposes. The Hijri Calendar is available in .NET as an optional calender for these locales but has not been implemented in **ncal** or **cal**.  
+Persian, some Arabic and other Middle Eastern locales use the Persian Calendar (also referred to as the Iranian Calendar). This is a solar Hijri calendar and starts from the year of the Hijri, which corresponds to 622 C.E. This is different to the Hijri Calendar (also referred to as the Muslim or Islamic Calendar), which is a lunar based calendar and is used to determine the proper days on which to celebrate Islamic holy days. The Hijri Calendar is available in .NET as an optional calender for these locales but has not been implemented in **ncal** or **cal**.  
 
 ## Usage
 
@@ -30,5 +29,5 @@ Example | Notes
 ![](/images/2021-12-06-095702.png) | Specifying a year without a month to show the entire year. Ignored if month with 'f' or 'p' is also specified. Use -Highlight to display month headings and today in another colour. Supported colours are red, yellow, blue, green, magenta, cyan, white and orange. 'None' can also be specified to remove the default highlight.
 ![](/images/2021-12-06-095735.png) | Display Julian Days (days one-based, numbered from 1st January). This can be used with -month, -year, -three, -before and -after.
 ![](/images/2021-12-06-095927.png) | With either month or year view, additional months can be added in front of and behind the specified month(s) with -Before and -After respectively. This works with -Month, -Year and -Three. Show week numbers (beneath each week column) using -Week.
-![](/images/2021-12-06-100948.png) | Example displaying a calendar in Urdu. 813 locales have been tested, with localised month names and day abbreviations being used. 
+![](/images/2021-12-06-100948.png) | Example displaying a calendar in Urdu. 813 locales have been tested, with localised month names and day abbreviations being used.
 ![](/images/2021-12-06-101044.png) | Example displaying a calendar in Russian
