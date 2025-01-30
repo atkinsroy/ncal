@@ -1,18 +1,24 @@
-# ncal / cal
+# ncal
 
-This PowerShell script displays calendar information similar to the Linux **ncal** and **cal** commands. It implements most of the main functionality, including the ability to display multiple months, years, Julian days, week numbers and with today highlighted in various colours.
+This command displays calendar information similar to the Linux ncal command. It implements most of the same functionality, including the ability to display multiple months, years, week numbers, day of the year and month forward and previous by one year.
 
-Note: PowerShell V7.2.0 (using $PSStyle) is required to show highlighting. It will work with previous versions, but -Highlight doesn't do anything. This could be fixed to support old versions, but onwards and upwards.
+But addition, the command can do a whole lot more:
+1. Display a calendar in any supported culture. Month and day names are displayed in the chosen culture, and using the primary calendar used for each culture.
+2. Start of week can be selected (Friday through Monday). By default, the culture setting is used.
+3. Display abbreviated (default) or full day names, specific to the culture.
+4. Display one to six months in a row, when multiple months are displayed (the default is 4).
+5. When display week numbers, they will align correctly with the first day of the week.
+6. Highlighting the month headings, today and week numbers is possible.
+        
+It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode character sets are both available and display properly. With one or two exceptions, all cultures align correctly.
 
-I have added the Linux **cal** command now also. It supports highlighting, Year, Month, Before and After, Three and JulianDay parameters, as well as display Monday as first day of the month. So pretty much everything **ncal** can do, except for month numbers.
+# cal
 
-I have added -FullDayName to **ncal** and -MonthPerRow in both commands. By default, **ncal** displays 4 months per row, **cal** displays 3 months per row.
+Similar to the Linux cal command with similar functionality extras, as above. -Longnames and -Week are not supported with cal, but everything else works the same.
 
 ## Globalization
 
-**ncal** and **cal** have been tested with all 813 locales and they work well with most of them. For languages with double width character sets (like Kanji and other Asian character sets), both utilities display correctly aligned calendars. However, right-to-left (RTL) languages (like Arabic, Hebrew, Pasto and Urdu) do not appear to have particularly good support in Windows. For example, in the VS code terminal, characters are aligned correctly, but are shown in reverse and are left justified. In Windows terminal, RTL characters are correctly shown right-to-left but alignment is pretty buggy. I suspect this is a terminal rendering issue rather than .NET support. For example, month headings can be correctly centred, but when they are concatenated together and displayed in Windows Terminal, month names "bleed" into the white space of an adjacent month. Alignment issues are particularly unpredictable when mixing RTL language character sets with latin characters (e.g. month name in Urdu together with year in latin numbers). For this reason, the best results I have found with RTL languages is to show just the month. I will potentially revisit this, if RLT language support improves.
-
-Persian, some Arabic and other Middle Eastern locales use the Persian Calendar (also referred to as the Iranian Calendar). This is a solar Hijri calendar and starts from the year of the Hijri, which corresponds to 622 C.E. This is different to the Hijri Calendar (also referred to as the Muslim or Islamic Calendar), which is a lunar based calendar and is used to determine the proper days on which to celebrate Islamic holy days. The Hijri Calendar is available in .NET as an optional calender for these locales but has not been implemented in **ncal** or **cal**. Note that the Hijri Calendar is used by default (with a few minor differences) in Saudi Arabia and so is implemented for this locale (ar-SA).
+**ncal** and **cal** have been tested with over 800 cultures and work well providing that Windows Terminal is used together with a font that supports unicode character sets.  Currently, 'Optional' calendars (in .Net) are not supported. These include the Julian, Hijra (Islamic), Chinese Lunar, Hebrew and several other calendars which are not used primarily by any culture but are observed in many parts of the world for religious or scientific purposes.
 
 ## Usage
 
