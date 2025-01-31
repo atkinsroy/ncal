@@ -1,23 +1,28 @@
-# ncal
+# Calendar Utility
+
+## ncal
 
 This command displays calendar information similar to the Linux ncal command. It implements most of the same functionality, including the ability to display multiple months, years, week numbers, day of the year and specified month forward and previous by one year.
 
 But in addition, the command can do a whole lot more:
+
 1. Display a calendar in any supported culture. Month and day names are displayed in the chosen culture as well as using the correct primary calendar for each culture. Use the following command:
+
 ```PowerShell
 Get-Culture -ListAvailable
 ```
-to see the available cultures and pass the culture name to ncal with the -Culture parameter. 
+
+to see the available cultures and pass the culture name to ncal with the -Culture parameter.
 
 2. Start of week can be selected (Friday through Monday). By default, the culture setting is used.
 3. Display abbreviated (default) or full day names, specific to the culture.
 4. Display one to six months in a row, when multiple months are displayed (the default is 4).
 5. When display week numbers, they will align correctly with the first day of the week.
 6. Highlight month headings, today and week numbers with a specified colour.
-        
+
 It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode character sets are both available and display properly. With one or two exceptions, all cultures align correctly. Results for cultures using unicode character sets probably wont look that great using other terminals.
 
-# cal
+## cal
 
 Similar to the Linux cal command with similar functionality extras, as above. Displaying full day names and week numbers are not supported with cal, but everything else works the same.
 
