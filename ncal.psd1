@@ -18,7 +18,7 @@ ModuleVersion = '3.0.1'
 # CompatiblePSEditions = @()
 
 # ID used to uniquely identify this module
-GUID = '5524980f-851a-4b0a-b707-f7d04010a9fc'
+GUID = 'e4f5d230-46ce-4094-b538-155aa1511bdc'
 
 # Author of this module
 Author = 'Roy Atkins'
@@ -30,7 +30,7 @@ CompanyName = 'Roy Atkins'
 Copyright = '(c) Roy Atkins. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'Display a calendar in any culture. Similar to the Linux ncal/cal commands, but better.'
+Description = 'Display a calendar in the Windows Terminal console using any culture. Similar to the Linux ncal/cal commands, but better.'
 
 # Minimum version of the PowerShell engine required by this module
 PowerShellVersion = '7.2'
