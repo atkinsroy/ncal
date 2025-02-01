@@ -35,7 +35,7 @@ Here are some examples of ncal usage:
 
 Example | Notes
 :--- | :---
-![Default ncal display](/images/2025-02-01-01.png) | By default, the current month is shown with today highlighted. Use '-Highlight None' to remove this highlight.
+![Default ncal display](/Images/2025-02-01-01.png) | By default, the current month is shown with today highlighted. Use '-Highlight None' to remove this highlight.
 ![Month and year](/images/2025-02-01 14 54 50.png) | The required month and year can be specified with or without -m and -y respectively. Culture is the third parameter. By default the local culture is used. Changing the culture affects the default first day of the month (the Americas, India, Japan and some Arabic, African and East Asian countries uses Sunday). Countries that adopt the Persian calendar (e.g. Iran, Afghanistan and Somalia) start their week on Saturday. All other countries (including Western and Eastern Europe, Russia, Asia Pacific and most of Asia) follow ISO 8601, with the week starting on Monday. According to .Net, one country, the Maldives, uses Friday. The first day of the week can be changed from the cultural default using -FirstDayOfWeek (supports Friday through Monday).
 ![Specify a culture](/images/2025-02-01 14 55 46.png) | Specify the required culture and use full length day names.
 ![Use f and p for forward and previous](/images/2025-02-01 14 57 45.png) | Use 'f' or 'p' suffix after the required month to show forward and previous by 1 year, respectively.
