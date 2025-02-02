@@ -33,7 +33,7 @@ Similar to the Linux cal command with similar functionality extras, as above. Di
 
 My original plan for this module was to support, not only all the cultures that are present in .NET Framework, but also to support the "Optional" and other calandars available. Whilst supporting optional calandars in .NET (like Hijri, Hebrew and the Asian Solar calendars) is easy, I really wanted to support all calendars. The Julian calendar and the Asian Lunar calendars (including the Chinese Lunar calendar) are not in general use or an optional calendar for any culture. So rather than dealing with cultures, as this module currently does, it will involve some significant rewriting to use these "standalone" calendars.
 
-As more of a note to my future self, this will involve changing how date conversions are currently performed. ParseExact uses the culture, but without a culture, the current date will need to be manipulated using .AddDays or a similar method.
+This will involve changing how date conversions are currently performed. ParseExact uses the culture, but without a culture, the current date will need to be manipulated using .AddDays, ToDateTime() or a similar method.
 
 ## Known Problems
 
