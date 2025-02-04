@@ -8,10 +8,9 @@ function Get-NcalRow {
     #>
     param (
         [Parameter(Mandatory, Position = 0)]
-        [System.Globalization.CultureInfo]$Culture,
+        [System.Globalization.Calendar]$Calendar,
 
         [Parameter(Mandatory, Position = 1)]
-        #[ValidateRange(-5, 1)]
         [Int]$Index,
         
         [Parameter(Position = 2)]
@@ -19,11 +18,11 @@ function Get-NcalRow {
         [Int]$DayPerMonth,
 
         [Parameter(Position = 3)]
-        [ValidateRange(1, 12)]
+        [ValidateRange(1, 13)]
         [Int]$Month,
 
         [Parameter(Position = 4)]
-        [ValidateRange(1000, 9999)]
+        [ValidateRange(1, 9999)]
         [Int]$Year,
 
         [Parameter(Position = 5)]
@@ -56,9 +55,8 @@ function Get-NcalRow {
             else {
                 if ($JulianSpecified) {
                     try {
-                        $ThisDate = '{0:D2}/{1:D2}/{2}' -f $WeekDay, $Month, $Year
-                        $UseDate = [datetime]::ParseExact($ThisDate, 'dd/MM/yyyy', $Culture)
-                        $JulianDay = $Culture.Calendar.GetDayOfYear($UseDate)
+                        $UseDate = $Calendar.ToDateTime($Year, $Month, $WeekDay, 0, 0, 0, 0, $Calendar.Eras[0] )
+                        $JulianDay = $Calendar.GetDayOfYear($UseDate)
                         $Row += "{0,$PadDay} " -f $JulianDay
                     }
                     catch {
@@ -78,9 +76,8 @@ function Get-NcalRow {
             after the string is padded to the right length.
         #>
         if ( ($Highlight.Today -gt 0) -and $JulianSpecified) {
-            $ThisDate = '{0:D2}/{1:D2}/{2}' -f $Highlight.Today, $Month, $Year
-            $UseDate = [datetime]::ParseExact($ThisDate, 'dd/MM/yyyy', $Culture)
-            $JulianDay = $Culture.Calendar.GetDayOfYear($UseDate)
+            $UseDate = $Calendar.ToDateTime($Year, $Month, $Highlight.Today, 0, 0, 0, 0, $Calendar.Eras[0] )
+            $JulianDay = $Calendar.GetDayOfYear($UseDate)
         
             if ($OutString -match "\b$JulianDay\b") {
                 $OutString = $OutString -replace "$JulianDay\b", "$($Highlight.DayStyle)$JulianDay$($Highlight.DayReset)"
@@ -106,10 +103,9 @@ function Get-CalRow {
 #>
     param (
         [Parameter(Position = 0)]
-        [System.Globalization.CultureInfo]$Culture,
+        [System.Globalization.Calendar]$Calendar,
 
         [Parameter(Position = 1)]
-        #[ValidateRange(-5, 1)]
         [Int]$Index,
         
         [Parameter(Position = 2)]
@@ -117,11 +113,11 @@ function Get-CalRow {
         [Int]$DayPerMonth,
 
         [Parameter(Position = 3)]
-        [ValidateRange(1, 12)]
+        [ValidateRange(1, 13)]
         [Int]$Month,
 
         [Parameter(Position = 4)]
-        [ValidateRange(1000, 9999)]
+        [ValidateRange(1, 9999)]
         [Int]$Year,
 
         [Parameter(Position = 5)]
@@ -137,11 +133,11 @@ function Get-CalRow {
         $JulianDay = 0
 
         if ($JulianSpecified) {
-            $PadRow = 29
+            $PadRow = 30
             $PadDay = 3
         }
         else {
-            $PadRow = 22
+            $PadRow = 23
             $PadDay = 2
         }
     }
@@ -158,9 +154,8 @@ function Get-CalRow {
             else {
                 if ($JulianSpecified) {
                     try {
-                        $ThisDate = '{0:D2}/{1:D2}/{2}' -f $WeekDay, $Month, $Year
-                        $UseDate = [datetime]::ParseExact($ThisDate, 'dd/MM/yyyy', $Culture)
-                        $JulianDay = $Culture.Calendar.GetDayOfYear($UseDate)
+                        $UseDate = $Calendar.ToDateTime($Year, $Month, $WeekDay, 0, 0, 0, 0, $Calendar.Eras[0] )
+                        $JulianDay = $Calendar.GetDayOfYear($UseDate)
                         $Row += "{0,$PadDay} " -f $JulianDay
                     }
                     catch {
@@ -180,8 +175,7 @@ function Get-CalRow {
             string after the string is padded to the right length.
         #>
         if ( ($Highlight.Today -gt 0) -and $JulianSpecified) {
-            $ThisDate = '{0:D2}/{1:D2}/{2}' -f $Highlight.Today, $Month, $Year
-            $UseDate = [datetime]::ParseExact($ThisDate, 'dd/MM/yyyy', $Culture)
+            $UseDate = $Calendar.ToDateTime($Year, $Month, $Highlight.Today, 0, 0, 0, 0, $Calendar.Eras[0] )
             $JulianDay = $Culture.Calendar.GetDayOfYear($UseDate)
         
             if ($OutString -match "\b$JulianDay\b") {
@@ -203,14 +197,15 @@ function Get-CalRow {
 function Get-Today {
     [CmdletBinding()]
     param (
-        [System.Globalization.CultureInfo]$Culture
+        [System.Globalization.Calendar]$Calendar
     )
     process {
         $Now = Get-Date
         [PSCustomObject]@{
-            'Year'  = $Culture.Calendar.GetYear($Now)
-            'Month' = $Culture.Calendar.GetMonth($Now)
-            'Day'   = $Culture.Calendar.GetDayOfMonth($Now)
+            'DateTime' = $Now #Always shown in local calendar
+            'Year'     = $Calendar.GetYear($Now)
+            'Month'    = $Calendar.GetMonth($Now)
+            'Day'      = $Calendar.GetDayOfMonth($Now)
         }
     }
 }
@@ -240,24 +235,21 @@ function Get-MonthHeading {
     process {
         if ($CallingFunction -eq 'Get-Calendar') {
             if ($true -eq $JulianSpecified) {
-                $HeadingLength = 29
+                $HeadingLength = 30
             }
             else {
-                $HeadingLength = 22
+                $HeadingLength = 23
             }
             # Special cases - resorted to hard coding for double width character sets like Kanji.
             # Japanese, traditional Chinese and Korean have 1 double width character in month name, simplified Chinese 
             # and Yi have two. This is a rough hack, but it works.
             if ($Culture.Name -match '^(ja|zh-hant|ko$|ko\-)') { $HeadingLength -= 1 }
             if ($Culture.Name -match '^(zh$|zh-hans|ii)') { $HeadingLength -= 2 }
-        
-            # Heading length also contains additional 2 space padding, so take this into account when centering
-            # Note: Padright on RTL languages makes no difference
             $Pad = $MonthName.Length + (($HeadingLength - 2 - $MonthName.Length) / 2)
             $MonthHeading = ($MonthName.PadLeft($Pad, ' ')).PadRight($HeadingLength, ' ')
 
         }
-        # This is for ncal
+        # Get-NCalendar is the (default) calling function
         else {
             if ($true -eq $JulianSpecified) {
                 $Pad = 24
@@ -265,15 +257,11 @@ function Get-MonthHeading {
             else {
                 $Pad = 19
             }
-            # Special cases - resorted to hard coding for double width characters
-            # Japanese, traditional Chinese and Korean have 1 double width character in month name, simplified Chinese 
-            # and Yi have two. This is a rough hack, but it works.
             if ($Culture.Name -match '^(ja|zh-hant|ko$|ko\-)') { $Pad -= 1 }
             if ($Culture.Name -match '^(zh$|zh-hans|ii)') { $Pad -= 2 }
             $MonthHeading = "$MonthName".PadRight($Pad, ' ')
         }
         Write-Output $MonthHeading
-        #Write-Verbose "|$MonthHeading| Length = $($MonthHeading.Length)"
     }
 }
 
@@ -281,25 +269,20 @@ function Get-FirstDayOfMonth {
     <# 
         .NOTES
         Helper function for Get-NCalendar and Get-Calendar that returns the date and day name of the first day of each 
-        required month, using the specified culture. This function performs the paramters validation for both ncal and
-        cal.
-
-        Note to self - the thing to remember when using different cultures is that once you've determined the
-        correct date in the required culture, you parse this to create a date object. Because we're not messing 
-        with the default system culture here, the date objects returned by this function will appear in the local 
-        culture. So non-Gregorian culture dates, like Persian, will look funky.
+        required month, using the specified calendar. This function performs the paramters validation for both 
+        ncal and cal.
     #>
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, Position = 0)]
-        [System.Globalization.CultureInfo]$Culture,
+        [System.Globalization.Calendar]$Calendar,
         
-        # Could be an integer between 1 and 12 or same with an f or p suffix
+        # Could be an integer between 1 and 13 or the same with an 'f' or 'p' suffix
         [Parameter(Position = 1)]
         [String]$Month,
         
         [Parameter(Position = 2)]
-        [ValidateRange(1000, 9999)]
+        [ValidateRange(1, 9999)]
         [Int]$Year,
 
         [Parameter(Position = 3)]
@@ -314,7 +297,8 @@ function Get-FirstDayOfMonth {
 
     process {
         # Todays date in specified culture
-        $Now = Get-Today -Culture $Culture
+        $Now = Get-Today -Calendar $Calendar
+        Write-Verbose "today year = $($Now.Year), today month = $($Now.Month), today day = $($Now.Day)"
 
         if ($PSBoundParameters.ContainsKey('Month')) {
             [Int]$AfterOffset = 0
@@ -341,17 +325,17 @@ function Get-FirstDayOfMonth {
                 $Year -= 1
             }
             else {
-                Write-Error "ncal: '$Month' is neither a month number (1..12) nor a valid month name (using the current culture)"
+                Write-Error "'$Month' is not a valid month number"
                 return
             }
         }
         else {
             # No month
             if ($PSBoundParameters.ContainsKey('Year')) {
-                # Year specified with no month; showing whole year
+                # Year specified with no month; showing whole year.
                 [Int]$MonthNumber = 1
                 [Int]$BeforeOffset = 0
-                [Int]$AfterOffset = 11
+                [Int]$AfterOffset = ($Calendar.GetMonthsInYear($Year) - 1)
                 $YearSpecified = $true
             }
             else {
@@ -376,38 +360,40 @@ function Get-FirstDayOfMonth {
             $AfterOffset += $After
         }
 
-        # special case for ar-sa (Arabic, Saudi Arabia)
-        if ($Culture.Name -match '^(ar-SA)$' -and ($Year -lt 1318 -or $Year -gt 1500)) {
-            write-verbose $Year
-            Write-Error 'The UmAlQura calendar (Saudi Arabia) is only supported for years 1318 to 1500.'
+        <#
+            Parameter validation complete. We have the required months to show, and a target month (typically this
+            month or possibly first month of required year). Get the date object of the first day of the specified
+            month and then use this to determine the date object of the first day of the first require month.
+        #>
+        $MonthCount = 1 + $BeforeOffset + $AfterOffset
+        try {
+            $TargetDate = $Calendar.ToDateTime($Year, $MonthNumber, 1, 0, 0, 0, 0, $Calendar.Eras[0])
+            $FirstDay = $Calendar.AddMonths($TargetDate, - $BeforeOffset)
+        }
+        catch {
+            Write-Error "Date conversion error - $($PSItem.Exception.Message)"
             return
         }
-
-        # Parameter validation complete. We have the required months to show, and a target month (typically this
-        # month or possibly first month of required year). Determine the date of the first day of target month
-        # and then use this to determine the date of the first day of the first required month.
-        $MonthCount = 1 + $BeforeOffset + $AfterOffset
-        $DateString = '{0}/{1:D2}/{2}' -f '01', $MonthNumber, $Year # ParseExact expects 2 digit day and month
-        $TargetDate = [datetime]::ParseExact($DateString, 'dd/MM/yyyy', $Culture)
-        $FirstDay = $Culture.Calendar.AddMonths($TargetDate, - $BeforeOffset)
     
         for ($i = 1; $i -le $MonthCount; $i++) {
-            $ThisYear = $Culture.Calendar.GetYear($FirstDay)
-            $ThisMonth = $Culture.Calendar.GetMonth($FirstDay)
-            $DayPerMonth = $Culture.Calendar.GetDaysInMonth($ThisYear, $ThisMonth)
+            $ThisYear = $Calendar.GetYear($FirstDay)
+            $ThisMonth = $Calendar.GetMonth($FirstDay)
+            $DayPerMonth = $Calendar.GetDaysInMonth($ThisYear, $ThisMonth)
+            $MonthPerYear = $Calendar.GetMonthsInYear($ThisYear)
             [pscustomobject] @{
                 'Date'          = $FirstDay # illustrates funky looking date when shown in local culture
                 'Year'          = $ThisYear
                 'Month'         = $ThisMonth
-                'Day'           = $Culture.Calendar.GetDayOfMonth($FirstDay) # for clarity, not used
-                'FirstDay'      = $Culture.Calendar.GetDayOfWeek($FirstDay) # for clarity, not used
-                'FirstDayIndex' = $Culture.Calendar.GetDayOfWeek($FirstDay).value__ # Monday=1, Sunday=7
+                'Day'           = $Calendar.GetDayOfMonth($FirstDay) # for clarity, not used
+                'FirstDay'      = $Calendar.GetDayOfWeek($FirstDay) # for clarity, not used
+                'FirstDayIndex' = $Calendar.GetDayOfWeek($FirstDay).value__ # Monday=1, Sunday=7
                 'DayPerMonth'   = $DayPerMonth
+                'MonthPerYear'  = $MonthPerYear
                 'YearSpecified' = $YearSpecified # Used to determine year and month headings
             }
-            $FirstDay = $Culture.Calendar.AddMonths($FirstDay, 1)
+            $FirstDay = $Calendar.AddMonths($FirstDay, 1)
         }
-    }
+    } #end process
 }
 
 function Get-StartWeekIndex {
@@ -415,13 +401,10 @@ function Get-StartWeekIndex {
         .NOTES
         The first day index is always 1 through 7, Monday to Sunday. This function returns an index, based on the 
         real/desired first day of the week and the actual start day. This will be a number between -5 and 1. When 
-        we reach an index=1, we start printing (Get-Ncal/Get-Cal), otherwise we print a space.
+        we reach an index=1, we start printing, otherwise we print a space.
     #>
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory, Position = 0)]
-        [System.Globalization.CultureInfo]$Culture,
-
         [Parameter(Mandatory, Position = 1)]
         [ValidateSet('Friday', 'Saturday', 'Sunday', 'Monday')]
         [string]$StartWeekDay,
@@ -483,9 +466,9 @@ function Get-WeekDayName {
 
         According .Net, just one language (Dhivehi - cultures dv and dv-MV), spoken in Maldives, has a week day 
         starting on Friday. Most Islamic countries (some Arabic, Persian, Pashto and one or two others) use 
-        Saturday. All Western and Eastern European countries, Russia, Indian, Asian-Pacific countries, except China 
-        and Japan follow ISO 1806 standard with Monday as the first day of the week. All North and South American 
-        countries, China and Japan use Sunday.
+        Saturday. All Western and Eastern European countries, Russia, Indian, most of Africa, Asian-Pacific 
+        countries, except China and Japan follow ISO 1806 standard with Monday as the first day of the week. All 
+        North and South American countries, some African, China and Japan use Sunday.
 
         With ncal, we want full day names or abbreviated day names (modified for some cultures).
         With cal, we want abbreviated names (shortened for some cultures) or the shortest day names.
@@ -507,6 +490,7 @@ function Get-WeekDayName {
     )
 
     begin {
+        [Int]$MonthOffset = 0
         $CallStack = Get-PSCallStack
         if ($CallStack.Count -gt 1) {
             $CallingFunction = $CallStack[1].Command
@@ -578,8 +562,8 @@ function Get-WeekDayName {
             }
         }
 
-        Write-Verbose "Specified/assumed First day of week is $FirstDayOfWeek"
-        Write-Verbose "Cultural First day of week is $($Culture.DateTimeFormat.FirstDayOfWeek)"
+        Write-Verbose "Specified/assumed first day of week is $FirstDayOfWeek"
+        Write-Verbose "Cultural first day of the week is $($Culture.DateTimeFormat.FirstDayOfWeek)"
 
         # DayNames and AbbreviatedDayNames properties in .Net are always Sunday based, regardless of culture.
         if ('Friday' -eq $FirstDayOfWeek) {
@@ -621,31 +605,32 @@ function Get-WeekRow {
         [System.Globalization.CultureInfo]$Culture,
 
         [Parameter(Mandatory, Position = 1)]
-        [ValidateRange(1, 12)]
-        [Int]$Month,
+        [System.Globalization.Calendar]$Calendar,
 
         [Parameter(Mandatory, Position = 2)]
-        [ValidateRange(1000, 9999)]
-        [Int]$Year,
+        [ValidateRange(1, 13)]
+        [Int]$Month,
 
         [Parameter(Mandatory, Position = 3)]
+        [ValidateRange(1, 9999)]
+        [Int]$Year,
+
+        [Parameter(Mandatory, Position = 4)]
         [ValidateSet('Friday', 'Saturday', 'Sunday', 'Monday')]
         [String]$FirstDayOfWeek,
 
-        [Parameter(Mandatory, Position = 3)]
+        [Parameter(Mandatory, Position = 5)]
         [ValidateRange(-5, 1)]
         [Int]$Index,
 
-        [Parameter(Position = 4)]
+        [Parameter(Position = 6)]
         [Bool]$JulianSpecified
     )
 
     process {
-        $ThisDate = '{0}/{1:D2}/{2}' -f '01', $Month, $Year
-        $FirstDate = [datetime]::ParseExact($ThisDate, 'dd/MM/yyyy', $Culture)
-        $DayPerMonth = $Culture.Calendar.GetDaysInMonth($Year, $Month)
+        $FirstDate = $Calendar.ToDateTime($Year, $Month, 1, 0, 0, 0, 0, $Calendar.Eras[0] )
+        $DayPerMonth = $Calendar.GetDaysInMonth($Year, $Month)
         $CultureWeekRule = $Culture.DateTimeFormat.CalendarWeekRule
-        Write-Verbose "WeekRow - $Month, $Year, $Index"
 
         # Adjust the starting week number, based on the first day of the week.
         if ('Friday' -eq $FirstDayOfWeek) {
@@ -670,12 +655,15 @@ function Get-WeekRow {
         [String]$WeekRow = ''
         [Int]$WeekCount = 5
 
+        # month starts last day or week and has at least 30 days is 6 columns wide
         if (-5 -eq $Index -and $DayPerMonth -ge 30) {
             $WeekCount = 6
         }
+        # month starts next to last day of week and has over 30 day is 6 columns wide
         elseif (-4 -eq $Index -and $DayPerMonth -gt 30) {
             $WeekCount = 6
         }
+        # February in some calendars that starts on the first day of the week is 4 columns wide
         elseif (1 -eq $Index -and $DayPerMonth -eq 28) {
             $WeekCount = 4
         }
@@ -701,75 +689,77 @@ function Get-WeekRow {
     
         $OutString = "$WeekRow".PadRight($PadRow, ' ')
         Write-Output $OutString
-        #Write-Verbose "|$OutString| Week row length $($OutString.Length)"
     } # end process
 }
 
 function Get-Highlight {
     <# 
     .NOTES
-        Helper function for Get-NCalendar and Get-Calendar. Returns an array with todays day if it is today as well
-        as formatting strings.
+        Helper function for Get-NCalendar and Get-Calendar. Returns a list of formatting strings and the day for
+        today. This is used to highlighting year/month headings, week row and todays day.
     #>
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, Position = 0)]
-        [System.Globalization.CultureInfo]$Culture,
+        [System.Globalization.Calendar]$Calendar,
 
         [Parameter(Mandatory, Position = 1)]
-        [ValidateRange(1, 12)]
+        [ValidateRange(1, 13)]
         [Int]$Month,
         
         [Parameter(Mandatory, Position = 2)]
-        [ValidateRange(1000, 9999)]
+        [ValidateRange(1, 9999)]
         [Int]$Year,
 
         [Parameter(Position = 3)]
         [ValidateSet('None', 'Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Magenta', 'White', 'Orange', $null)]
         [String]$Highlight
     )
-    $Now = Get-Today -Culture $Culture
-    if ( ($Month -eq $Now.Month) -and ($Year -eq $Now.Year) ) {
-        $Today = $Now.Day
-    }
-    else {
-        $Today = 0
-    }
-    if (-not $Highlight) {
-        # This is the default; reverse highlight today but no highlighted month name
-        Write-Output @{
-            Today    = $Today
-            MonStyle = $null
-            MonReset = $null
-            DayStyle = $PSStyle.Reverse
-            DayReset = $PSStyle.ReverseOff
+
+    process {
+        $Now = Get-Today -Calendar $Calendar
+        if ( ($Month -eq $Now.Month) -and ($Year -eq $Now.Year) ) {
+            $Today = $Now.Day
         }
-    }
-    elseif ('None' -eq $Highlight) {
-        # Turn off highlighting today
-        Write-Output @{
-            Today = 0
+        else {
+            $Today = 0
         }
-    }
-    elseif ('Orange' -eq $Highlight) {
-        # To demonstrate a non-PSStyle supplied colour
-        Write-Output @{
-            Today    = $Today
-            MonStyle = "$($PSStyle.Foreground.FromRgb(255,131,0))$($PSStyle.Bold)"
-            MonReset = $PSStyle.Reset
-            DayStyle = "$($PSStyle.Background.FromRgb(255,131,0))$($PSStyle.Foreground.FromRgb(0,0,0))"
-            DayReset = $PSStyle.Reset
+        if (-not $Highlight) {
+            # This is the default; reverse highlight today but no highlighted month name
+            Write-Output @{
+                Today    = $Today
+                MonStyle = $null
+                MonReset = $null
+                DayStyle = $PSStyle.Reverse
+                DayReset = $PSStyle.ReverseOff
+            }
         }
-    }
-    else {
-        # Force the bright version of the specified colour
-        $Colour = "Bright$Highlight"
-        Write-Output @{
-            Today    = $Today
-            MonStyle = "$($PSStyle.Foreground.$Colour)$($PSStyle.Bold)"
-            MonReset = $PSStyle.Reset
-            DayStyle = "$($PSStyle.Background.$Colour)$($PSStyle.Foreground.FromRgb(0,0,0))"
-            DayReset = $PSStyle.Reset
+        elseif ('None' -eq $Highlight) {
+            # Turn off highlighting today
+            Write-Output @{
+                Today = 0
+            }
+        }
+        elseif ('Orange' -eq $Highlight) {
+            # To demonstrate a non-PSStyle supplied colour
+            Write-Output @{
+                Today    = $Today
+                MonStyle = "$($PSStyle.Foreground.FromRgb(255,131,0))$($PSStyle.Bold)"
+                MonReset = $PSStyle.Reset
+                DayStyle = "$($PSStyle.Background.FromRgb(255,131,0))$($PSStyle.Foreground.FromRgb(0,0,0))"
+                DayReset = $PSStyle.Reset
+            }
+        }
+        else {
+            # Force the bright version of the specified colour
+            $Colour = "Bright$Highlight"
+            Write-Output @{
+                Today    = $Today
+                MonStyle = "$($PSStyle.Foreground.$Colour)$($PSStyle.Bold)"
+                MonReset = $PSStyle.Reset
+                DayStyle = "$($PSStyle.Background.$Colour)$($PSStyle.Foreground.FromRgb(0,0,0))"
+                DayReset = $PSStyle.Reset
+            }
         }
     }
 }
@@ -779,26 +769,30 @@ function Get-NCalendar {
     .SYNOPSIS
         Get-NCalendar
     .DESCRIPTION
-        This command displays calendar information similar to the Linux ncal command. It implements most of the
-        same functionality, including the ability to display multiple months, years, week numbers, day of the year 
-        and month forward and previous by one year.
+        This command displays calendar information similar to the Linux ncal command. It implements the same 
+        functionality, including the ability to display multiple months, years, week number per year, day of the
+        year and month forward and previous by one year.
 
         But in addition, the command can do a whole lot more:
-        1. Display a calendar in any supported culture. Month and day names are displayed in the chosen culture, 
-           and using the primary calendar used for each culture.
-        2. Start of week can be selected (Friday through Monday). By default, the culture setting is used.
+        1. Display a calendar in any supported culture. Month and day names are displayed in the appropriate
+        language for the specified culture and the appropriate calendar is used (e.g. Gregorian, Persian).
+        2. Not only display the primary calendar (used by each culture), but also display optional calendars.
+        These are Hijri, Hebrew, Japanese (Solar), Korean (Solar) and Taiwanese (Solar) calendars. In addition,
+        the non-optional calendars (i.e. calendars not used by any culture, but still observed for religious, 
+        scientific or traditional purposes). These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar
+        calendars. (Note: Only the current era is supported).
+        2. Specify the first day of the week (Friday through Monday). The specified or current culture setting is 
+        used by default. Friday through Monday are supported because all cultures use one of these days.
         3. Display abbreviated (default) or full day names, specific to the culture.
         4. Display one to six months in a row, when multiple months are displayed (the default is 4).
-        5. When display week numbers, they will align correctly with the first day of the week.
-        6. Highlighting the month headings, today and week numbers is possible.
-        
-        It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode
-        character sets are both available and display properly. With one or two exceptions, all cultures align 
-        correctly.
+        5. When displaying week numbers, they will align correctly with respect to the default or specified first
+        day of the week.
+        6. Highlight the year and month headings, todays date and week numbers using a specified colour.
 
-        Currently, 'Optional' calendars are not supported. These include the Julian, Hijra (Islamic), Chinese Lunar, 
-        Hebrew and several other calendars which are not used primarily by any culture but are observed in many parts
-        of the world for religious or scientific purposes.
+        It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode
+        character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code,
+        the ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode
+        character sets, calendars may appear misaligned.
     .PARAMETER Month
         Specifies the required month. This must be specified as a number 0..12. An 'f' (forward by one year) or a 'p' 
         (previous year) suffix can also be appended to the month number.
@@ -806,6 +800,9 @@ function Get-NCalendar {
         Specifies the required year. If no month is specified, the whole year is shown.
     .PARAMETER Culture
         Specifies the required culture. The system default culture is used by default.
+    .PARAMETER Calendar
+        Instead of culture, specify the required calendar. This provides support for non-primary calendars, like 
+        the Julian, Hijri and Chinese Lunar calendars.
     .PARAMETER FirstDayOfWeek
         Display the specified first day of the week. By default, the required culture is used to determine this.
     .PARAMETER MonthPerRow
@@ -863,6 +860,20 @@ function Get-NCalendar {
 
         Shows the specified year with a highlighted colour. Supports red, blue, 
         green, yellow, orange, cyan, magenta and white. Disable all highlighting with 'none'.
+    .EXAMPLE
+        PS C:> ncal -calendar Julian -m 1 -a 11
+
+        Shows this month and the following 11 months on the non-optional Julian calendar. 
+        
+        Note: This actually works, unlike the Linux cal command (as at Feb 2025), which sometimes shows the wrong 
+        month (shows this Julian month but in terms of month number on the Gregorian calendar), depending on the 
+        day of the month.
+    .EXAMPLE
+        PS C:> ncal -cal Hijri -m 1 -a 11
+
+        Shows this month and the following 11 months on the optional Hijri calendar.
+
+        Note: This is not supported on Linux cal command.
     .INPUTS
         [System.String]
         [System.Int]
@@ -872,7 +883,7 @@ function Get-NCalendar {
         Author: Roy Atkins
     #>
     [Alias('ncal')]
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'UseCulture')]
     param(
         # Could be integer between 1 and 12 or the same with an 'f' or 'p' suffix.
         [Parameter(Position = 0)]
@@ -880,11 +891,31 @@ function Get-NCalendar {
         [String]$Month,
 
         [Parameter(Position = 1)]
-        [ValidateRange(1000, 9999)]
+        [ValidateRange(1, 9999)]
         [Int]$Year,
 
-        [Parameter(Position = 2)]
+        [Parameter(Position = 2, ParameterSetName = 'UseCulture')]
+        [Alias('c', 'cul')]
         [String]$Culture,
+
+        [Parameter(Position = 2, ParameterSetName = 'UseCalendar')]
+        [Alias('cal')]
+        [ValidateSet(
+            'Gregorian', 
+            'Persian', 
+            'Hijri', 
+            'Hebrew', 
+            'Japanese', 
+            'Korean', 
+            'Taiwan', 
+            'UmAlQura', 
+            'ThaiBuddhist',
+            'Julian',
+            'ChineseLunisolar',
+            'JapaneseLunisolar',
+            'KoreanLunisolar',
+            'TaiwanLunisolar')]
+        [String]$Calendar,
 
         [Parameter(Position = 3)]
         [ValidateSet('Friday', 'Saturday', 'Sunday', 'Monday')]
@@ -914,7 +945,6 @@ function Get-NCalendar {
     begin {
         $Abort = $false
         if ($PSBoundParameters.ContainsKey('Culture')) {
-            #$ThisCulture = [System.Globalization.CultureInfo]::CreateSpecificCulture($Culture)
             try {
                 $ThisCulture = New-Object System.Globalization.CultureInfo($Culture) -ErrorAction Stop
             }
@@ -922,20 +952,39 @@ function Get-NCalendar {
                 Write-Warning "ncal: Invalid culture specified:'$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
                 $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
             }
+            $ThisCalendar = $ThisCulture.Calendar
+        }
+        elseif ($PSBoundParameters.ContainsKey('Calendar')) {
+            $CultureLookup = @{
+                'Gregorian'         = 'en-AU'
+                'Persian'           = 'fa-IR'
+                'Hijri'             = 'ar-SA'
+                'Hebrew'            = 'he-IL'
+                'Japanese'          = 'ja-JP'
+                'Korean'            = 'ko-KR'
+                'Taiwan'            = 'zh-Hant-TW'
+                'UmAlQura'          = 'ar-SA'
+                'ThaiBuddhist'      = 'th-th'
+                'Julian'            = 'en-AU'
+                'ChineseLunisolar'  = 'zh'
+                'JapaneseLunisolar' = 'ja'
+                'KoreanLunisolar'   = 'ko'
+                'TaiwanLunisolar'   = 'zh-Hant-TW'
+            }
+            # This method only works for the Optional calendars of a culture.
+            $ThisCulture = New-Object System.Globalization.CultureInfo($($CultureLookup[$Calendar]))
+            $ThisCalendar = New-Object "System.Globalization.$($Calendar)Calendar"
         }
         else {
             $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
+            $ThisCalendar = $ThisCulture.Calendar
         }
 
         # Full month names in current culture
         $MonthNameArray = $ThisCulture.DateTimeFormat.MonthGenitiveNames
 
-        <# 
-            Instead of showing days of month, show days of the year. Linux ncal is wrong in referring to this as
-            Julian Day, which is a continuous count of days from the start of the Julian Period (current Julian 
-            Period started in 4713 BC). However, continue to use "Julian" because its more eye-catching than
-            "DayOfYear".
-        #>
+        # Calling DayOfYear 'Julian' is incorrect. JulianDay is something else altogether. However keep 'Julian' as
+        # its more eye-catching.
         if ($PSBoundParameters.ContainsKey('DayOfYear')) {
             [Bool]$JulianSpecified = $true
         }
@@ -943,57 +992,59 @@ function Get-NCalendar {
             [Bool]$JulianSpecified = $false
         }
 
-        # List of abbreviated or long day names in the required order.
+        # List of short day names in the required order.
         if ($PSBoundParameters.ContainsKey('FirstDayOfWeek')) {
             $Param = @{
-                'Culture'        = $ThisCulture
-                'FirstDayOfWeek' = $FirstDayOfWeek
-                'LongDayName'    = $LongDayName
+                'Culture'         = $ThisCulture
+                'FirstDayOfWeek'  = $FirstDayOfWeek
+                'JulianSpecified' = $JulianSpecified
+                'LongDayName'     = $LongDayName
             }
             $WeekDay = Get-WeekDayName @Param
         }
         else {
             $DefaultFirstDay = $ThisCulture.DateTimeFormat.FirstDayOfWeek
             $Param = @{
-                'Culture'        = $ThisCulture
-                'FirstDayOfWeek' = $DefaultFirstDay
-                'LongDayName'    = $LongDayName
+                'Culture'         = $ThisCulture
+                'FirstDayOfWeek'  = $DefaultFirstDay
+                'JulianSpecified' = $JulianSpecified
+                'LongDayName'     = $LongDayName
             }
             $WeekDay = Get-WeekDayName @Param
-        }
 
-        # Get the date of the first day of each required month, based on the culture (common to ncal & cal)
-        $DateParam = New-Object -TypeName System.Collections.Hashtable
-        $DateParam.Add('Culture', $ThisCulture)
-        if ($PSBoundParameters.ContainsKey('Month')) {
-            $DateParam.Add('Month', $Month)
-        }
-        if ($PSBoundParameters.ContainsKey('Year')) {
-            $DateParam.Add('Year', $Year)
-        }
-        if ($PSBoundParameters.ContainsKey('Three')) {
-            $DateParam.Add('Three', $Three)
-        }
-        if ($PSBoundParameters.ContainsKey('Before')) {
-            $DateParam.Add('Before', $Before)
-        }
-        if ($PSBoundParameters.ContainsKey('After')) {
-            $DateParam.Add('After', $After)
-        }
-        # this is where most parameter validation occurs, and most of the date conversion stuff.
-        try {
-            $MonthList = Get-FirstDayOfMonth @DateParam -ErrorAction Stop
-        }
-        catch {
-            Write-Error $PSItem.Exception.Message
-            $Abort = $true
-        }
+            # Get the date of the first day of each required month, based on the culture (common to ncal & cal)
+            $DateParam = New-Object -TypeName System.Collections.Hashtable
+            $DateParam.Add('Calendar', $ThisCalendar)
+            if ($PSBoundParameters.ContainsKey('Month')) {
+                $DateParam.Add('Month', $Month)
+            }
+            if ($PSBoundParameters.ContainsKey('Year')) {
+                $DateParam.Add('Year', $Year)
+            }
+            if ($PSBoundParameters.ContainsKey('Before')) {
+                $DateParam.Add('Before', $Before)
+            }
+            if ($PSBoundParameters.ContainsKey('After')) {
+                $DateParam.Add('After', $After)
+            }
+            if ($PSBoundParameters.ContainsKey('Three')) {
+                $DateParam.Add('Three', $Three)
+            }
+            # this is where most parameter validation occurs, and most of the date conversion stuff.
+            try {
+                $MonthList = Get-FirstDayOfMonth @DateParam -ErrorAction Stop
+            }
+            catch {
+                Write-Error $PSItem.Exception.Message
+                $Abort = $true
+            }
 
-        # To hold each row of 1 to 6 months, initialized with culture specific day abbreviation
-        [System.Collections.Generic.List[String]]$MonthRow = $WeekDay.Name
-        $MonthCount = 0
-        $MonthHeading = ' ' * $WeekDay.Offset
-        $WeekRow = ' ' * ($WeekDay.Offset - 1)
+            # To hold each row of 1 to 6 months, initialized with culture specific day abbreviation
+            [System.Collections.Generic.List[String]]$MonthRow = $WeekDay.Name
+            $MonthCount = 0
+            $MonthHeading = ' ' * $WeekDay.Offset
+            $WeekRow = ' ' * ($WeekDay.Offset - 1)
+        }
     }
     process {
         foreach ($RequiredMonth in $MonthList) {
@@ -1011,8 +1062,13 @@ function Get-NCalendar {
             }
 
             # for highlighting today
-            $Pretty = Get-Highlight $ThisCulture $ThisMonth $ThisYear $Highlight
-            Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, culture = $($ThisCulture.Name)"
+            $Pretty = Get-Highlight $ThisCalendar $ThisMonth $ThisYear $Highlight
+            if ($PSBoundParameters.ContainsKey('Calendar')) {
+                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, calendar = $($ThisCalendar.ToString().Replace('System.Globalization.','')), era = $($ThisCalendar.Eras[0])"
+            }
+            else {
+                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, culture = $($ThisCulture.Name)"
+            }
 
             # User specified First day of the week, or use the default for the culture being used.
             if ($PSBoundParameters.ContainsKey('FirstDayOfWeek')) {
@@ -1035,7 +1091,6 @@ function Get-NCalendar {
 
             # Get the starting index for the month, to offset when to start printing dates in the row.
             $Param = @{
-                'Culture'       = $ThisCulture
                 'StartWeekDay'  = $StartWeekDay
                 'FirstDayIndex' = $FirstDayIndex
             }
@@ -1052,6 +1107,7 @@ function Get-NCalendar {
                 if ($PSBoundParameters.ContainsKey('Week')) {
                     $Param = @{
                         'Culture'         = $ThisCulture
+                        'Calendar'        = $ThisCalendar
                         'Month'           = $ThisMonth
                         'Year'            = $ThisYear
                         'FirstDayOfWeek'  = $StartWeekDay
@@ -1087,6 +1143,7 @@ function Get-NCalendar {
                 if ($PSBoundParameters.ContainsKey('Week')) {
                     $Param = @{
                         'Culture'         = $ThisCulture
+                        'Calendar'        = $ThisCalendar
                         'Month'           = $ThisMonth
                         'Year'            = $ThisYear
                         'FirstDayOfWeek'  = $StartWeekDay
@@ -1107,7 +1164,7 @@ function Get-NCalendar {
 
             0..6 | ForEach-Object {
                 $Param = @{
-                    'Culture'         = $ThisCulture
+                    'Calendar'        = $ThisCalendar
                     'Index'           = $ThisIndex
                     'DayPerMonth'     = $DayPerMonth
                     'Month'           = $ThisMonth
@@ -1144,24 +1201,27 @@ function Get-Calendar {
     .SYNOPSIS
         Get-Calendar
     .DESCRIPTION
-        This command displays calendar information similar to the Linux cal command. It implements most of the
-        same functionality, including the ability to display multiple months, years, week numbers, day of the year 
-        and month forward and previous by one year.
+        This command displays calendar information similar to the Linux cal command. It implements the same 
+        functionality, including the ability to display multiple months, years, day of the year and month forward 
+        and previous by one year.
 
         But in addition, the command can do a whole lot more:
-        1. Display a calendar in any supported culture. Month and day names are displayed in the chosen culture, 
-           and using the primary calendar used for each culture.
-        2. Start of week can be selected (Friday through Monday). By default, the chosen culture setting is used.
+        1. Display a calendar in any supported culture. Month and day names are displayed in the appropriate
+        language for the specified culture and the appropriate calendar is used (e.g. Gregorian, Persian).
+        2. Not only display the primary calendar (used by each culture), but also display optional calendars.
+        These are Hijri, Hebrew, Japanese (Solar), Korean (Solar) and Taiwanese (Solar) calendars. In addition,
+        the non-optional calendars (i.e. calendars not used by any culture, but still observed for religious, 
+        scientific or traditional purposes). These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar
+        calendars. (Note: Only the current era is supported).
+        2. Specify the first day of the week (Friday through Monday). The specified or current culture setting is 
+        used by default. Friday through Monday are supported because all cultures use one of these days.
         3. Display one to six months in a row, when multiple months are displayed (the default is 3).
-        4. Highlighting the month headings, today and week numbers is possible.
+        4. Highlight the year and month headings, todays date and week numbers using a specified colour.
         
         It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode
-        character sets are both available and display properly. With one or two exceptions, all cultures align 
-        correctly.
-
-        Currently, 'Optional' calendars are not supported. These include the Julian, Hijra (Islamic), Chinese Lunar, 
-        Hebrew and several other calendars which are not used primarily by any culture but are observed in many parts
-        of the world for religious or scientific purposes.
+        character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code,
+        the ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode
+        character sets, calendars may appear misaligned.  
     .PARAMETER Month
         Specifies the required month. This must be specified as a number 0..12. An 'f' (forward by one year) or a 'p' 
         (previous year) suffix can also be appended to the month number.
@@ -1169,6 +1229,9 @@ function Get-Calendar {
         Specifies the required year. If no month is specified, the whole year is shown.
     .PARAMETER Culture
         Specifies the required culture. The system default culture is used by default.
+    .PARAMETER Calendar
+        Instead of culture, specify the required calendar. This provides support for non-primary calendars, like 
+        the Julian, Hijri and Chinese Lunar calendars.
     .PARAMETER FirstDayOfWeek
         Display the specified first day of the week. By default, the required culture is used to determine this.
     .PARAMETER MonthPerRow
@@ -1222,6 +1285,20 @@ function Get-Calendar {
 
         Shows the specified year with a highlighted colour. Supports red, blue, green, yellow
         cyan, magenta and white. Disable all highlighting with 'none'.
+    .EXAMPLE
+        PS C:> cal -calendar Julian -m 1 -a 11
+
+        Shows this month and the following 11 months on the non-optional Julian calendar.
+
+        Note: This actually works, unlike the Linux cal command (as at Feb 2025), which sometimes shows the wrong 
+        month (shows this Julian month but in terms of month number on the Gregorian calendar), depending on the 
+        day of the month.
+    .EXAMPLE
+        PS C:> cal -cal Hijri -m 1 -a 11
+
+        Shows this month and the following 11 months on the optional Hijri calendar.
+
+        Note: This is not supported on Linux cal command.
     .INPUTS
         [System.String]
         [System.Int]
@@ -1231,7 +1308,7 @@ function Get-Calendar {
         Author: Roy Atkins
     #>
     [Alias('cal')]
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'UseCulture')]
     param(
         # Could be integer between 1 and 12 or the same with an 'f' or 'p' suffix.
         [Parameter(Position = 0)]
@@ -1239,11 +1316,31 @@ function Get-Calendar {
         [String]$Month,
         
         [Parameter(Position = 1)]
-        [ValidateRange(1000, 9999)]
+        [ValidateRange(1, 9999)]
         [Int]$Year,
 
-        [parameter(Position = 2)]
+        [parameter(Position = 2, ParameterSetName = 'UseCulture')]
+        [Alias('c', 'cul')]
         [String]$Culture,
+
+        [Parameter(Position = 2, ParameterSetName = 'UseCalendar')]
+        [Alias('cal')]
+        [ValidateSet(
+            'Gregorian', 
+            'Persian', 
+            'Hijri', 
+            'Hebrew', 
+            'Japanese', 
+            'Korean', 
+            'Taiwan', 
+            'UmAlQura', 
+            'ThaiBuddhist',
+            'Julian',
+            'ChineseLunisolar',
+            'JapaneseLunisolar',
+            'KoreanLunisolar',
+            'TaiwanLunisolar')]
+        [String]$Calendar,
 
         [parameter(Position = 3)]
         [ValidateSet('Friday', 'Saturday', 'Sunday', 'Monday')]
@@ -1269,7 +1366,6 @@ function Get-Calendar {
     begin {
         $Abort = $false
         if ($PSBoundParameters.ContainsKey('Culture')) {
-            #$ThisCulture = [System.Globalization.CultureInfo]::CreateSpecificCulture($Culture)
             try {
                 $ThisCulture = New-Object System.Globalization.CultureInfo($Culture) -ErrorAction Stop
             }
@@ -1277,20 +1373,39 @@ function Get-Calendar {
                 Write-Warning "ncal: Invalid culture specified:'$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
                 $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
             }
+            $ThisCalendar = $ThisCulture.Calendar
+        }
+        elseif ($PSBoundParameters.ContainsKey('Calendar')) {
+            $CultureLookup = @{
+                'Gregorian'         = 'en-AU'
+                'Persian'           = 'fa-IR'
+                'Hijri'             = 'ar-SA'
+                'Hebrew'            = 'he-IL'
+                'Japanese'          = 'ja-JP'
+                'Korean'            = 'ko-KR'
+                'Taiwan'            = 'zh-Hant-TW'
+                'UmAlQura'          = 'ar-SA'
+                'ThaiBuddhist'      = 'th-th'
+                'Julian'            = 'en-AU'
+                'ChineseLunisolar'  = 'zh'
+                'JapaneseLunisolar' = 'ja'
+                'KoreanLunisolar'   = 'ko'
+                'TaiwanLunisolar'   = 'zh-Hant-TW'
+            }
+            # This method only works for the Optional calendars of a culture.
+            $ThisCulture = New-Object System.Globalization.CultureInfo($($CultureLookup[$Calendar]))
+            $ThisCalendar = New-Object "System.Globalization.$($Calendar)Calendar"
         }
         else {
             $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
+            $ThisCalendar = $ThisCulture.Calendar
         }
 
         # Full month names in current culture
         $MonthNameArray = $ThisCulture.DateTimeFormat.MonthGenitiveNames
 
-        <# 
-            Instead of showing days of month, show days of the year. Linux cal is wrong in referring to this as
-            Julian Day, which is a continuous count of days from the start of the Julian Period (current Julian 
-            Period started in 4713 BC). However, continue to use "Julian" because its more eye-catching than
-            "DayOfYear".
-        #>
+        # Calling DayOfYear 'Julian' is incorrect. JulianDay is something else altogether. However keep 'Julian' as
+        # its more eye-catching.
         if ($PSBoundParameters.ContainsKey('DayOfYear')) {
             [Bool]$JulianSpecified = $true
         }
@@ -1319,7 +1434,7 @@ function Get-Calendar {
 
         # Get the date of the first day of each required month, based on the culture (common to ncal & cal)
         $DateParam = New-Object -TypeName System.Collections.Hashtable
-        $DateParam.Add('Culture', $ThisCulture)
+        $DateParam.Add('Calendar', $ThisCalendar)
         if ($PSBoundParameters.ContainsKey('Month')) {
             $DateParam.Add('Month', $Month)
         }
@@ -1365,8 +1480,13 @@ function Get-Calendar {
             }
 
             # for highlighting today
-            $Pretty = Get-Highlight $ThisCulture $ThisMonth $ThisYear $Highlight
-            Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, culture = $($ThisCulture.Name)"
+            $Pretty = Get-Highlight $ThisCalendar $ThisMonth $ThisYear $Highlight
+            if ($PSBoundParameters.ContainsKey('Calendar')) {
+                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, calendar = $($ThisCalendar.ToString().Replace('System.Globalization.','')), era = $($ThisCalendar.Eras[0])"
+            }
+            else {
+                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, culture = $($ThisCulture.Name)"
+            }
 
             # User specified First day of the week, or use the default for the culture being used.
             if ($PSBoundParameters.ContainsKey('FirstDayOfWeek')) {
@@ -1389,7 +1509,6 @@ function Get-Calendar {
             
             # Get the starting index for the month, to offset when to start printing dates in the row.
             $Param = @{
-                'Culture'       = $ThisCulture
                 'StartWeekDay'  = $StartWeekDay
                 'FirstDayIndex' = $FirstDayIndex
             }
@@ -1426,10 +1545,10 @@ function Get-Calendar {
                 $MonthHeading = "$(Get-MonthHeading @Param)"
             }
 
-            $MonthRow[0] += "$($WeekDay.Name)" + '  '
+            $MonthRow[0] += "$($WeekDay.Name)" + '   '
             1..6 | ForEach-Object {
                 $Param = @{
-                    'Culture'         = $ThisCulture
+                    'Calendar'        = $ThisCalendar
                     'Index'           = $ThisIndex
                     'DayPerMonth'     = $DayPerMonth
                     'Month'           = $ThisMonth
@@ -1457,4 +1576,4 @@ function Get-Calendar {
             Write-Output $MonthRow
         }
     }
-}    
+}

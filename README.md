@@ -2,20 +2,34 @@
 
 ## ncal
 
-This command displays calendar information similar to the Linux ncal command. It implements most of the same functionality, including the ability to display multiple months, years, week numbers, day of the year and specified month forward and previous by one year.
+This command displays calendar information similar to the Linux ncal command. It implements the same functionality,
+including the ability to display multiple months, years, week number per year, day of the year and month forward
+and previous by one year.
 
 But in addition, the command can do a whole lot more:
 
-1. Display a calendar in any supported culture. Month and day names are displayed in the chosen culture as well as using the correct primary calendar for each culture.
-2. Start of week can be selected (Friday through Monday). By default, the culture setting is used.
-3. Display abbreviated (default) or full day names, specific to the culture.
-4. Display one to six months in a row, when multiple months are displayed (the default is 4).
-5. When display week numbers, they will align correctly with the first day of the week.
-6. Highlight month headings, today and week numbers with a specified colour.
+1. Display a calendar in any supported culture. Month and day names are displayed in the appropriate language for
+the specified culture and the appropriate calendar is used (e.g. Gregorian, Persian).
+2. Not only display the primary calendar (used by each culture), but also display optional calendars. These are
+Hijri, Hebrew, Japanese (Solar), Korean (Solar) and Taiwanese (Solar) calendars. In addition, the non-optional
+calendars (i.e. calendars not used by any culture, but still observed for religious, scientific or traditional
+purposes). These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar calendars. (Note: Only the
+current era is supported).
+3. Specify the first day of the week (Friday through Monday). The specified or current culture setting is used by
+default. Friday through Monday are supported because all cultures use one of these days.
+4. Display abbreviated (default) or full day names, specific to the culture.
+5. Display one to six months in a row, when multiple months are displayed (the default is 4).
+6. When displaying week numbers, they will align correctly with respect to the default or specified first day of
+the week.
+7. Highlight the year and month headings, todays date and week numbers using a specified colour.
 
-It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode character sets are both available and display properly. With one or two exceptions, all cultures align correctly. Results for cultures using unicode character sets probably wont look that great using other terminals.
+It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode
+character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code, the
+ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode character
+sets, calendars may appear misaligned.
 
-Use the following command to see the available cultures on your system and pass a culture name to ncal with the -Culture parameter
+Use the following command to see the available cultures on your system and pass a culture name to ncal with the
+-Culture parameter.
 
 ```PowerShell
 Get-Culture -ListAvailable
@@ -23,21 +37,33 @@ Get-Culture -ListAvailable
 
 ## cal
 
-Similar to the Linux cal command with similar functionality extras, as above. Displaying full day names and week numbers are not supported with cal, but everything else works the same.
+Similar to the Linux cal command with similar functionality extras, as above. Displaying full day names and week
+numbers are not supported with cal, but everything else works the same.
 
 ## Globalization
 
-**ncal** and **cal** have been tested with over 800 cultures and work well providing that Windows Terminal is used together with a font that supports unicode character sets.  Currently, 'Optional' calendars (in .Net) are not supported. These include the Julian, Hijra (Islamic), Chinese Lunar, Hebrew and several other calendars which are not used primarily by any culture but are observed in many parts of the world for religious or scientific purposes.
-
-## Future
-
-My original plan for this module was to support, not only all the cultures that are present in .NET Framework, but also to support the "Optional" and other calandars available. Whilst supporting optional calandars in .NET (like Hijri, Hebrew and the Asian Solar calendars) is easy, I really wanted to support all calendars. The Julian calendar and the Asian Lunar calendars (including the Chinese Lunar calendar) are not in general use or an optional calendar for any culture. So rather than dealing with cultures, as this module currently does, it will involve some significant rewriting to use these "standalone" calendars.
-
-This will involve changing how date conversions are currently performed. ParseExact uses the culture, but without a culture, the current date will need to be manipulated using .AddDays, ToDateTime() or a similar method.
+**ncal** and **cal** have been tested with over 800 cultures and work well providing that Windows Terminal is used
+together with a font that supports unicode character sets.  Currently, 'Optional' calendars (in .Net) are not
+supported. These include the Julian, Hijra (Islamic), Chinese Lunar, Hebrew and several other calendars which are
+not used primarily by any culture but are observed in many parts of the world for religious or scientific purposes.
 
 ## Known Problems
 
-All calendars display well, except for cultures using the Chakma language (ccp, ccp-BD and ccp-IN). Log an issue if this affects you. In addition, some languages have really long month and day names. Rather than attempting to shorten these, I've left them culturally correct. Again, if this is affecting you and can help me with the specifics, I'd be prepared to look at this. For cultures that use extended unicode character sets, I probably will not attempt to shorten names.
+1. All calendars display well, except for cultures using the Chakma language (ccp, ccp-BD and ccp-IN). Log an
+issue if this affects you.
+2. Some languages have really long month and day names. Rather than attempting to shorten these, they have been
+left culturally correct. Again, if this is affecting you and you can help with the specifics, I'd be prepared to
+look at this. For cultures that use extended unicode character sets, I probably will not attempt to shorten names.
+3. The non-optional calendars have no DateTimeFormat properties. So the culture that makes the most sense is used.
+For some calendars, this is ok; the month and day names from the ar-SA (Saudi Arabia) uses the same names. But
+other calendars, like Hebrew, use different names to the closest culture (in this case he-IL, this uses the
+Gregorian calendar and has different names in Hebrew to the Hebrew calendar). I suspect this is true for other
+calendars too. Note that the Julian calendar uses an ISO 1806 culture because, well I live in a country which
+follows this standard.
+4. Some Lunar calendars have 13 months in some years. The thirteenth month displays ok when displaying a year, but
+for the same reason as above, this month has no heading. This is because the DateTimeFormat for the closest culture
+invariably uses Gregorian which has twelve months only. In summary, I don't think .NET Framework supports none
+default calendars with respect to DateTimeFormat.
 
 ## Usage
 
