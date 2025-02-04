@@ -874,6 +874,8 @@ function Get-NCalendar {
         Shows this month and the following 11 months on the optional Hijri calendar.
 
         Note: This is not supported on Linux cal command.
+    .LINK
+        https://github.com/atkinsroy/ncal/docs
     .INPUTS
         [System.String]
         [System.Int]
@@ -939,7 +941,9 @@ function Get-NCalendar {
 
         [Switch]$Week,
 
-        [Switch]$LongDayName
+        [Switch]$LongDayName,
+
+        [switch]$Name
     )
 
     begin {
@@ -978,6 +982,16 @@ function Get-NCalendar {
         else {
             $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
             $ThisCalendar = $ThisCulture.Calendar
+        }
+
+        # Display the Culture/Calendar name as a heading
+        if ($PSBoundParameters.ContainsKey('Name') -and $PSBoundParameters.ContainsKey('Calendar')) {
+            $CalendarString = $($ThisCalendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ''))   
+            Write-Output "$($PSStyle.Reverse)$CalendarString Calendar$($PSStyle.ReverseOff)`n"
+        }
+        elseif ($PSBoundParameters.ContainsKey('Name') -and $PSBoundParameters.ContainsKey('Culture')) {
+            $CalendarString = $($ThisCulture.Calendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ''))
+            Write-Output "$($PSStyle.Reverse)$($ThisCulture.Name) - $($ThisCulture.DisplayName) - $CalendarString Calendar$($PSStyle.ReverseOff)`n"
         }
 
         # Full month names in current culture
@@ -1064,7 +1078,7 @@ function Get-NCalendar {
             # for highlighting today
             $Pretty = Get-Highlight $ThisCalendar $ThisMonth $ThisYear $Highlight
             if ($PSBoundParameters.ContainsKey('Calendar')) {
-                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, calendar = $($ThisCalendar.ToString().Replace('System.Globalization.','')), era = $($ThisCalendar.Eras[0])"
+                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, calendar = $($ThisCalendar.ToString().Replace('System.Globalization.', '')), era = $($ThisCalendar.Eras[0])"
             }
             else {
                 Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, culture = $($ThisCulture.Name)"
@@ -1299,6 +1313,8 @@ function Get-Calendar {
         Shows this month and the following 11 months on the optional Hijri calendar.
 
         Note: This is not supported on Linux cal command.
+    .LINK
+        https://github.com/atkinsroy/ncal/docs
     .INPUTS
         [System.String]
         [System.Int]
@@ -1360,7 +1376,9 @@ function Get-Calendar {
 
         [Switch]$Three,
 
-        [Switch]$DayOfYear
+        [Switch]$DayOfYear,
+
+        [Switch]$Name
     )
 
     begin {
@@ -1399,6 +1417,16 @@ function Get-Calendar {
         else {
             $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
             $ThisCalendar = $ThisCulture.Calendar
+        }
+
+        # Display the Culture/Calendar name as a heading
+        if ($PSBoundParameters.ContainsKey('Name') -and $PSBoundParameters.ContainsKey('Calendar')) {
+            $CalendarString = $($ThisCalendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ''))   
+            Write-Output "$($PSStyle.Reverse)$CalendarString Calendar$($PSStyle.ReverseOff)`n"
+        }
+        elseif ($PSBoundParameters.ContainsKey('Name') -and $PSBoundParameters.ContainsKey('Culture')) {
+            $CalendarString = $($ThisCulture.Calendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ''))
+            Write-Output "$($PSStyle.Reverse)$($ThisCulture.Name) - $($ThisCulture.DisplayName) - $CalendarString Calendar$($PSStyle.ReverseOff)`n"
         }
 
         # Full month names in current culture
@@ -1482,7 +1510,7 @@ function Get-Calendar {
             # for highlighting today
             $Pretty = Get-Highlight $ThisCalendar $ThisMonth $ThisYear $Highlight
             if ($PSBoundParameters.ContainsKey('Calendar')) {
-                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, calendar = $($ThisCalendar.ToString().Replace('System.Globalization.','')), era = $($ThisCalendar.Eras[0])"
+                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, calendar = $($ThisCalendar.ToString().Replace('System.Globalization.', '')), era = $($ThisCalendar.Eras[0])"
             }
             else {
                 Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, culture = $($ThisCulture.Name)"
@@ -1574,6 +1602,99 @@ function Get-Calendar {
             }
             Write-Output "$($Pretty.MonStyle)$MonthHeading$($Pretty.MonReset)"
             Write-Output $MonthRow
+        }
+    }
+}
+
+function Get-Now {
+    <#
+    .SYNOPSIS
+        Get today's date in any of the calendars supported by .NET
+    .DESCRIPTION
+        Displays today's date in any of the calendars supported ny .NET Framework. By default, today's date for
+        every supported calendar is shown. The Gregorian calendar is always shown, to compare with the specified
+        calendar.
+    .NOTES
+        Information or caveats about the function e.g. 'This function is not supported in Linux'
+    .LINK
+        https://github.com/atkinsroy/ncal/docs
+    .EXAMPLE
+        Get-Now
+        
+        Displays today's date in every supported calendar
+    .EXAMPLE
+        Get-Now -Calendar Persian,Hijri,UmAlQura
+
+        Displays today's date for each specified calendar, along with the Gregorian calendar.
+    #>
+
+    [CmdletBinding()]
+    param (
+        [parameter(Position = 0)]
+        [ValidateSet(
+            'Julian',
+            'Hijri',
+            'Persian',
+            'UmAlQura',
+            'ChineseLunisolar',
+            'Hebrew',
+            'Japanese',
+            'JapaneseLunisolar',
+            'Korean',
+            'KoreanLunisolar',
+            'Taiwan',
+            'TaiwanLunisolar',
+            'ThaiBuddhist'
+        )]
+        [String[]]$Calendar = @(
+            'Julian',
+            'Hijri',
+            'Persian',
+            'UmAlQura',
+            'ChineseLunisolar',
+            'Hebrew',
+            'Japanese',
+            'JapaneseLunisolar',
+            'Korean',
+            'KoreanLunisolar',
+            'Taiwan',
+            'TaiwanLunisolar',
+            'ThaiBuddhist')
+    )
+
+    begin {
+        $Now = Get-Date
+        $Cal = New-Object -TypeName 'System.Globalization.GregorianCalendar'
+        $CalMonth = $Cal.GetMonth($Now)
+        $CalYear = $Cal.GetYear($Now)
+        [PSCustomObject] @{
+            'PSTypeName'   = 'Ncal.Date'
+            'Calendar'     = 'GregorianCalendar'
+            'Day'          = $Cal.GetDayOfMonth($Now)
+            'Month'        = $CalMonth
+            'Year'         = $CalYear
+            'DaysInMonth'  = $Cal.GetDaysInMonth($CalYear, $CalMonth)
+            'MonthsInYear' = $Cal.GetMonthsInYear($CalYear)
+            'Era'          = $Cal.Eras[0]
+        } 
+    }
+
+    process {
+        foreach ($ThisCalendar in $Calendar) {
+            $ThisCalendarString = "$($ThisCalendar)Calendar"
+            $Cal = New-Object -TypeName "System.Globalization.$ThisCalendarString"
+            $CalMonth = $Cal.GetMonth($Now)
+            $CalYear = $Cal.GetYear($Now)
+            [PSCustomObject] @{
+                'PSTypeName'   = 'Ncal.Date'
+                'Calendar'     = $ThisCalendarString
+                'Day'          = $Cal.GetDayOfMonth($Now)
+                'Month'        = $CalMonth
+                'Year'         = $CalYear
+                'DaysInMonth'  = $Cal.GetDaysInMonth($CalYear, $CalMonth)
+                'MonthsInYear' = $Cal.GetMonthsInYear($CalYear)
+                'Era'          = $Cal.Eras[0]
+            } 
         }
     }
 }
