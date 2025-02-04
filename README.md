@@ -55,12 +55,12 @@ issue if this affects you.
 left culturally correct. Again, if this is affecting you and you can help with the specifics, I'd be prepared to
 look at this. For cultures that use extended unicode character sets, I probably will not attempt to shorten names.
 3. The non-optional calendars have no DateTimeFormat properties. So the culture that makes the most sense is used.
-For some calendars, this is ok; the month and day names from the ar-SA (Saudi Arabia) uses the same names. But
-other calendars, like Hebrew, use different names to the closest culture (in this case he-IL, this uses the
-Gregorian calendar and has different names in Hebrew to the Hebrew calendar). I suspect this is true for other
-calendars too. Note that the Julian calendar uses an ISO 1806 culture because, well I live in a country which
+For some calendars, this is ok; the month and day names from the ar-SA (Saudi Arabia) uses the same names, for
+example. But other calendars, like Hebrew, use different names to the closest culture (in this case he-IL, this
+uses the Gregorian calendar and has different names in Hebrew to the Hebrew calendar). I suspect this is true for
+other calendars too. Note that the Julian calendar uses an ISO 1806 culture because, well I live in a country which
 follows this standard.
-4. Some Lunar calendars have 13 months in some years. The thirteenth month displays ok when displaying a year, but
+5. Some Lunar calendars have 13 months in some years. The thirteenth month displays ok when displaying a year, but
 for the same reason as above, this month has no heading. This is because the DateTimeFormat for the closest culture
 invariably uses Gregorian which has twelve months only. In summary, I don't think .NET Framework supports none
 default calendars with respect to DateTimeFormat.
