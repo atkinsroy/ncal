@@ -781,13 +781,13 @@ function Get-NCalendar {
         the non-optional calendars (i.e. calendars not used by any culture, but still observed for religious, 
         scientific or traditional purposes). These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar
         calendars. (Note: Only the current era is supported).
-        2. Specify the first day of the week (Friday through Monday). The specified or current culture setting is 
+        3. Specify the first day of the week (Friday through Monday). The specified or current culture setting is 
         used by default. Friday through Monday are supported because all cultures use one of these days.
-        3. Display abbreviated (default) or full day names, specific to the culture.
-        4. Display one to six months in a row, when multiple months are displayed (the default is 4).
-        5. When displaying week numbers, they will align correctly with respect to the default or specified first
+        4. Display abbreviated (default) or full day names, specific to the culture.
+        5. Display one to six months in a row, when multiple months are displayed (the default is 4).
+        6. When displaying week numbers, they will align correctly with respect to the default or specified first
         day of the week.
-        6. Highlight the year and month headings, todays date and week numbers using a specified colour.
+        7. Highlight the year and month headings, todays date and week numbers using a specified colour.
 
         It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode
         character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code,
@@ -1213,10 +1213,10 @@ function Get-Calendar {
         the non-optional calendars (i.e. calendars not used by any culture, but still observed for religious, 
         scientific or traditional purposes). These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar
         calendars. (Note: Only the current era is supported).
-        2. Specify the first day of the week (Friday through Monday). The specified or current culture setting is 
+        3. Specify the first day of the week (Friday through Monday). The specified or current culture setting is 
         used by default. Friday through Monday are supported because all cultures use one of these days.
-        3. Display one to six months in a row, when multiple months are displayed (the default is 3).
-        4. Highlight the year and month headings, todays date and week numbers using a specified colour.
+        4. Display one to six months in a row, when multiple months are displayed (the default is 3).
+        5. Highlight the year and month headings, todays date and week numbers using a specified colour.
         
         It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode
         character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code,
