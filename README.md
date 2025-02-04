@@ -63,7 +63,7 @@ other calendars too.
 5. Some Lunar calendars have 13 months in some years. The thirteenth month displays ok when displaying a year, but
 for the same reason as above, this month has no heading. This is because the DateTimeFormat for the closest culture
 invariably uses Gregorian which has twelve months only. In summary, I don't think .NET Framework supports none
-default calendars with respect to DateTimeFormat.
+default calendars with respect to DateTimeFormat very well.
 
 ## Usage
 
