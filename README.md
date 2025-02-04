@@ -46,6 +46,7 @@ numbers are not supported with cal, but everything else works the same.
 together with a font that supports unicode character sets.  Currently, 'Optional' calendars (in .Net) are not
 supported. These include the Julian, Hijra (Islamic), Chinese Lunar, Hebrew and several other calendars which are
 not used primarily by any culture but are observed in many parts of the world for religious or scientific purposes.
+Note that the Julian calendar uses an ISO 1806 culture because, well I live in a country that follows this standard.
 
 ## Known Problems
 
@@ -58,8 +59,7 @@ look at this. For cultures that use extended unicode character sets, I probably 
 For some calendars, this is ok; the month and day names from the ar-SA (Saudi Arabia) uses the same names, for
 example. But other calendars, like Hebrew, use different names to the closest culture (in this case he-IL, this
 uses the Gregorian calendar and has different names in Hebrew to the Hebrew calendar). I suspect this is true for
-other calendars too. Note that the Julian calendar uses an ISO 1806 culture because, well I live in a country which
-follows this standard.
+other calendars too.
 5. Some Lunar calendars have 13 months in some years. The thirteenth month displays ok when displaying a year, but
 for the same reason as above, this month has no heading. This is because the DateTimeFormat for the closest culture
 invariably uses Gregorian which has twelve months only. In summary, I don't think .NET Framework supports none
