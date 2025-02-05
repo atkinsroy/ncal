@@ -986,12 +986,12 @@ function Get-NCalendar {
 
         # Display the Culture/Calendar name as a heading
         if ($PSBoundParameters.ContainsKey('Name') -and $PSBoundParameters.ContainsKey('Calendar')) {
-            $CalendarString = $($ThisCalendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ''))   
-            Write-Output "$($PSStyle.Reverse)$CalendarString Calendar$($PSStyle.ReverseOff)`n"
+            $CalendarString = $($ThisCalendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ' Calendar'))   
+            Write-Output "$($PSStyle.Reverse)--|$CalendarString|--$($PSStyle.ReverseOff)`n"
         }
-        elseif ($PSBoundParameters.ContainsKey('Name') -and $PSBoundParameters.ContainsKey('Culture')) {
-            $CalendarString = $($ThisCulture.Calendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ''))
-            Write-Output "$($PSStyle.Reverse)$($ThisCulture.Name) - $($ThisCulture.DisplayName) - $CalendarString Calendar$($PSStyle.ReverseOff)`n"
+        elseif ($PSBoundParameters.ContainsKey('Name')) {
+            $CalendarString = $($ThisCulture.Calendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ' Calendar'))
+            Write-Output "$($PSStyle.Reverse)--|$($ThisCulture.Name)|-|$($ThisCulture.DisplayName)|-|$CalendarString|--$($PSStyle.ReverseOff)`n"
         }
 
         # Full month names in current culture
@@ -1421,12 +1421,12 @@ function Get-Calendar {
 
         # Display the Culture/Calendar name as a heading
         if ($PSBoundParameters.ContainsKey('Name') -and $PSBoundParameters.ContainsKey('Calendar')) {
-            $CalendarString = $($ThisCalendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ''))   
-            Write-Output "$($PSStyle.Reverse)$CalendarString Calendar$($PSStyle.ReverseOff)`n"
+            $CalendarString = $($ThisCalendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ' Calendar'))   
+            Write-Output "$($PSStyle.Reverse)--|$CalendarString|--$($PSStyle.ReverseOff)`n"
         }
-        elseif ($PSBoundParameters.ContainsKey('Name') -and $PSBoundParameters.ContainsKey('Culture')) {
-            $CalendarString = $($ThisCulture.Calendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ''))
-            Write-Output "$($PSStyle.Reverse)$($ThisCulture.Name) - $($ThisCulture.DisplayName) - $CalendarString Calendar$($PSStyle.ReverseOff)`n"
+        elseif ($PSBoundParameters.ContainsKey('Name')) {
+            $CalendarString = $($ThisCulture.Calendar.ToString().Replace('System.Globalization.', '').Replace('Calendar', ' Calendar'))
+            Write-Output "$($PSStyle.Reverse)--|$($ThisCulture.Name)|-|$($ThisCulture.DisplayName)|-|$CalendarString|--$($PSStyle.ReverseOff)`n"
         }
 
         # Full month names in current culture
