@@ -498,10 +498,8 @@ function Get-WeekDayName {
     }
     process {
         if ($CallingFunction -eq 'Get-Calendar') {
-            # Truncate some Abbreviated day names to two characters (e.g. Mo, Tu), rather than Shortest day names (e.g. M, T)
-            # for some Western languages.
+            # Some cultures use double width character sets. So attempt to capture these and do not pad day names
             if ($Culture.Name -match '^(ja|zh|ko$|ko\-|ii)') {
-                # Some cultures use double width character sets. So attempt to capture these and do not pad day names
                 $WeekDay = $Culture.DateTimeFormat.ShortestDayNames
                 if ($true -eq $JulianSpecified) {
                     # For day of the year, each day is 2 characters wide with double-width character sets.
@@ -509,7 +507,9 @@ function Get-WeekDayName {
                 }
             }
             else {
-                if ($Culture.Name -match '^(da|de|es|eo|en|fr|it|pt)') {
+                # Truncate some Abbreviated day names to two characters (e.g. Mo, Tu), rather than Shortest day names (e.g. M, T)
+                # for some Western and other languages.
+                if ($Culture.Name -match '^(da|de|es|eo|en|fr|it|pt|wo|fil)') {
                     $WeekDay = $Culture.DateTimeFormat.AbbreviatedDayNames | ForEach-Object { "$_".Substring(0, 2) }
                 }
                 else {
@@ -795,8 +795,8 @@ function Get-NCalendar {
         the ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode
         character sets, calendars may appear misaligned.
     .PARAMETER Month
-        Specifies the required month. This must be specified as a number 0..13. An 'f' (forward by one year) or a 'p' 
-        (previous year) suffix can also be appended to the month number.
+        Specifies the required month. This must be specified as a number 0..13. An 'f' (forward by one year) or a
+        'p' (previous by one year) suffix can also be appended to the month number.
     .PARAMETER Year
         Specifies the required year. If no month is specified, the whole year is shown.
     .PARAMETER Culture
@@ -809,23 +809,24 @@ function Get-NCalendar {
     .PARAMETER MonthPerRow
         Display the specified number of months in each row. By default it is 4 months.
     .PARAMETER Highlight
-        By default, today's date is highlighted. Specify a colour or disable the default highlight with 'none'.
+        By default, today's date is highlighted. Specify a colour to highlight today, the year/month headings and
+        week numbers or disable the default highlight with 'none'.
     .PARAMETER Before
         The specified number of months are added before the specified month(s). See -After for examples.
     .PARAMETER After
         The specified number of months are added after the specified month(s). This is in addition to any date range 
-        selected by the -Year or -Three options. For example, ncal -y 2021 -B 2 -A 2 will show from November 2020 to
-        February 2022. Negative numbers are allowed, in which case the specified number of months is subtracted. For
-        example, ncal -Y 2021 -B -6 shows July to December. Another example, ncal -A 11 simply shows the next 12 months.
+        selected by the -Year or -Three options. Negative numbers are allowed, in which case the specified number 
+        of months is subtracted. For example ncal -after 11 simply shows the next 12 months in any culture.
     .PARAMETER Three
-        Display the previous, current and next month surrounding the requested month. If -Year is also specified, this 
-        parameter is ignored.
+        Display the current month together with the previous and following month. If -Year is also specified, this 
+        supercedes it.
     .PARAMETER DayOfYear
         Display the day of the year (days one-based, numbered from 1st January).
     .PARAMETER Week
-        Print the number of the week below each week column
+        Display the number of the week below each week column.
     .PARAMETER LongDayName
-        Display full day names for the required culture, instead of abbreviated day names.
+        Display full day names for the required culture or calendar, instead of abbreviated day names (default).
+        For some cultures, there is no difference.
     .PARAMETER Name
         Display the name of the specified culture and/or calendar name as a banner above the calendar.
     .EXAMPLE
@@ -833,12 +834,12 @@ function Get-NCalendar {
         
         Displays this month using the current culture
     .EXAMPLE
-        PS C:\> ncal -m 1 -a 11 -culture fa
+        PS C:\> ncal -month 1 -after 11 -culture fa
         
-        Displays the current month and the following 11 months for any specified culture. For example, -Year 2025 
-        with cultures that do not use the Gregorian calendar by default will not work or produce unintended results. 
-        Some cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, Saudi Arabian) calendars 
-        by default.
+        Displays the first month and the following 11 months (this year) for any specified culture. For example, 
+        -Year 2025 with cultures that do not use the Gregorian calendar by default will not work or produce 
+        unintended results. Some cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, Saudi 
+        Arabian) calendars by default.
     .EXAMPLE
         PS C:\> ncal -m 1f
 
@@ -854,13 +855,13 @@ function Get-NCalendar {
     .EXAMPLE
         PS C:\> ncal -DayOfYear -three
         
-        Show the day number, starting from 1st January, for last month, this month and next month
+        Show the day number, starting from 1st January, for this month as well as last month and next month.
     .EXAMPLE
         PS C:\> ncal 2 2026 -three 
         
         Show February 2026 with the month prior and month after.
     .EXAMPLE
-        PS C:> ncal -Year 2025 -Week -H Orange
+        PS C:> ncal -Year 2025 -Week -H Cyan
 
         Shows the specified year with a highlighted colour. Supports red, blue, 
         green, yellow, orange, cyan, magenta and white. Disable all highlighting with - Highlight 'none'. Week
@@ -870,7 +871,7 @@ function Get-NCalendar {
 
         Display a calender using the  Japanese (Japan) culture for the specified year.
     .EXAMPLE
-        PS C:> 'Persian','Hijri','UmAlQura' | % { ncal -calendar $_ -Name }
+        PS C:> 'Persian','Hijri','UmAlQura' | % { ncal -calendar $_ -name }
 
         Display three calendars (the current month) using the specified calendars with a banner to identify each 
         culture/calendar.
@@ -882,15 +883,15 @@ function Get-NCalendar {
     .EXAMPLE
         PS C:> ncal -calendar Julian -m 1 -a 11
 
-        Shows this month and the following 11 months in the Julian calendar.
+        Shows this year in the Julian calendar.
         
-        Note: This actually works, unlike the Linux ncal command (as at Feb 2025), which sometimes shows the wrong 
-        month (shows this Julian month but in terms of month number on the Gregorian calendar), depending on the 
-        day of the month.
+        Note: This actually works correctly, unlike the Linux ncal command (as at Feb 2025), which sometimes shows
+        the wrong month (shows this Julian month but in terms of month number on the Gregorian calendar),
+        depending on the day of the month.
     .EXAMPLE
         PS C:> ncal -cal Hijri -m 1 -a 11
 
-        Shows this month and the following 11 months in the Hijri (Muslim) calendar.
+        Shows this year in the Hijri (Muslim) calendar.
 
         Note: This is not supported with Linux ncal command.
     .LINK
@@ -906,7 +907,7 @@ function Get-NCalendar {
     [Alias('ncal')]
     [CmdletBinding(DefaultParameterSetName = 'UseCulture')]
     param(
-        # Could be integer between 1 and 12 or the same with an 'f' or 'p' suffix.
+        # Could be integer between 1 and 13 or the same with an 'f' or 'p' suffix.
         [Parameter(Position = 0)]
         [Alias('m')]
         [String]$Month,
@@ -972,7 +973,7 @@ function Get-NCalendar {
                 $ThisCulture = New-Object System.Globalization.CultureInfo($Culture) -ErrorAction Stop
             }
             catch {
-                Write-Warning "ncal: Invalid culture specified:'$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
+                Write-Warning "Invalid culture specified:'$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
                 $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
             }
             $ThisCalendar = $ThisCulture.Calendar
@@ -1078,7 +1079,7 @@ function Get-NCalendar {
         $MonthHeading = ' ' * $WeekDay.Offset
         $WeekRow = ' ' * ($WeekDay.Offset - 1)
     }
-    
+
     process {
         foreach ($RequiredMonth in $MonthList) {
             if ($true -eq $Abort) {
@@ -1257,8 +1258,8 @@ function Get-Calendar {
         the ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode
         character sets, calendars may appear misaligned.
     .PARAMETER Month
-        Specifies the required month. This must be specified as a number 0..13. An 'f' (forward by one year) or a 'p' 
-        (previous year) suffix can also be appended to the month number.
+        Specifies the required month. This must be specified as a number 0..13. An 'f' (forward by one year) or a
+        'p'  (previous year) suffix can also be appended to the month number.
     .PARAMETER Year
         Specifies the required year. If no month is specified, the whole year is shown.
     .PARAMETER Culture
@@ -1269,19 +1270,19 @@ function Get-Calendar {
     .PARAMETER FirstDayOfWeek
         Display the specified first day of the week. By default, the required culture is used to determine this.
     .PARAMETER MonthPerRow
-        Display the specified number of months in each row. By default it is 4 months.
+        Display the specified number of months in each row. By default it is 3 months.
     .PARAMETER Highlight
-        By default, today's date is highlighted. Specify a colour or disable the default highlight with 'none'.
+        By default, today's date is highlighted. Specify a colour to highlight today, the year/month headings and
+        week numbers or disable the default highlight with 'none'.
     .PARAMETER Before
         The specified number of months are added before the specified month(s). See -After for examples.
     .PARAMETER After
         The specified number of months are added after the specified month(s). This is in addition to any date range 
-        selected by the -Year or -Three options. For example, ncal -y 2021 -B 2 -A 2 will show from November 2020 to
-        February 2022. Negative numbers are allowed, in which case the specified number of months is subtracted. For
-        example, ncal -Y 2021 -B -6 shows July to December. Another example, ncal -A 11 simply shows the next 12 months.
+        selected by the -Year or -Three options. Negative numbers are allowed, in which case the specified number 
+        of months is subtracted. For example ncal -after 11 simply shows the next 12 months in any culture.
     .PARAMETER Three
-        Display the previous, current and next month surrounding the requested month. If -Year is also specified, this 
-        parameter is ignored.
+        Display the current month together with the previous and following month. If -Year is also specified, this 
+        supercedes it.
     .PARAMETER DayOfYear
         Display the day of the year (days one-based, numbered from 1st January).
     .PARAMETER Name
@@ -1293,10 +1294,10 @@ function Get-Calendar {
     .EXAMPLE
         PS C:\> cal -m 1 -a 11 -culture fa
         
-        Displays the current month and the following 11 months for any specified culture. For example, -Year 2025 
-        with cultures that do not use the Gregorian calendar by default will not work or produce unintended results. 
-        Some cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, Saudi Arabian) calendars 
-        by default.
+        Displays the first month and the following 11 months (this year) for any specified culture. For example, 
+        -Year 2025 with cultures that do not use the Gregorian calendar by default will not work or produce 
+        unintended results. Some cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, Saudi 
+        Arabian) calendars by default.
     .EXAMPLE
         PS C:\> cal -m 1f
 
@@ -1312,13 +1313,13 @@ function Get-Calendar {
     .EXAMPLE
         PS C:\> cal -DayOfYear -Three
         
-        Show the day number, starting from 1st January, for last month, this month and next month
+        Show the day number, starting from 1st January, for this month as well as last month and next month.
     .EXAMPLE
-        PS C:\> cal 2 2026 -Three 
+        PS C:\> cal 2 2026 -three 
         
         Show February 2026 with the month prior and month after.
     .EXAMPLE
-        PS C:> cal -Year 2025 -Highlight Orange
+        PS C:> cal -Year 2025 -Highlight Cyan
 
         Shows the specified year with a highlighted colour. Supports red, blue, 
         green, yellow, orange, cyan, magenta and white. Disable all highlighting with - Highlight 'none'.
@@ -1327,7 +1328,7 @@ function Get-Calendar {
 
         Display a calender using the  Japanese (Japan) culture for the specified year.
     .EXAMPLE
-        PS C:> 'Persian','Hijri','UmAlQura' | % { cal -calendar $_ -Name }
+        PS C:> 'Persian','Hijri','UmAlQura' | % { cal -calendar $_ -name }
 
         Display three calendars (the current month) using the specified calendars with a banner to identify each 
         culture/calendar. 
@@ -1339,15 +1340,15 @@ function Get-Calendar {
     .EXAMPLE
         PS C:> ncal -calendar Julian -m 1 -a 11
 
-        Shows this month and the following 11 months in the Julian calendar. 
-        
-        Note: This actually works, unlike the Linux ncal command (as at Feb 2025), which sometimes shows the wrong 
-        month (shows this Julian month but in terms of month number on the Gregorian calendar), depending on the 
-        day of the month.
+        Shows this year in the Julian calendar. 
+
+        Note: This actually works correctly, unlike the Linux ncal command (as at Feb 2025), which sometimes shows
+        the wrong month (shows this Julian month but in terms of month number on the Gregorian calendar),
+        depending on the day of the month.
     .EXAMPLE
         PS C:> ncal -cal Hijri -m 1 -a 11
 
-        Shows this month and the following 11 months in the Hijri (Muslim) calendar.
+        Shows this year in the Hijri (Muslim) calendar.
 
         Note: This is not supported with Linux ncal command.
     .LINK
@@ -1363,7 +1364,7 @@ function Get-Calendar {
     [Alias('cal')]
     [CmdletBinding(DefaultParameterSetName = 'UseCulture')]
     param(
-        # Could be integer between 1 and 12 or the same with an 'f' or 'p' suffix.
+        # Could be integer between 1 and 13 or the same with an 'f' or 'p' suffix.
         [Parameter(Position = 0)]
         [Alias('m')]
         [String]$Month,
@@ -1425,7 +1426,7 @@ function Get-Calendar {
                 $ThisCulture = New-Object System.Globalization.CultureInfo($Culture) -ErrorAction Stop
             }
             catch {
-                Write-Warning "ncal: Invalid culture specified:'$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
+                Write-Warning "Invalid culture specified:'$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
                 $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
             }
             $ThisCalendar = $ThisCulture.Calendar
@@ -1485,7 +1486,6 @@ function Get-Calendar {
                 'FirstDayOfWeek'  = $FirstDayOfWeek
                 'JulianSpecified' = $JulianSpecified
             }
-            $WeekDay = Get-WeekDayName @Param
         }
         else {
             $DefaultFirstDay = $ThisCulture.DateTimeFormat.FirstDayOfWeek
@@ -1494,8 +1494,8 @@ function Get-Calendar {
                 'FirstDayOfWeek'  = $DefaultFirstDay
                 'JulianSpecified' = $JulianSpecified
             }
-            $WeekDay = Get-WeekDayName @Param
         }
+        $WeekDay = Get-WeekDayName @Param
 
         # Get the date of the first day of each required month, based on the culture (common to ncal & cal)
         $DateParam = New-Object -TypeName System.Collections.Hashtable
@@ -1610,7 +1610,7 @@ function Get-Calendar {
                 $MonthHeading = "$(Get-MonthHeading @Param)"
             }
 
-            $MonthRow[0] += "$($WeekDay.Name)" + '   '
+            $MonthRow[0] += "$($WeekDay.Name)" + '   ' # PadRight doesn't work here because of double width chars
             1..6 | ForEach-Object {
                 $Param = @{
                     'Calendar'        = $ThisCalendar

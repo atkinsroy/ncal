@@ -75,8 +75,8 @@ Displays this month using the current culture
 ncal -m 1 -a 11 -culture fa
 ```
 
-Displays the current month and the following 11 months for any specified culture. For example, -Year 2025 with
-cultures that do not use the Gregorian calendar by default will not work or produce unintended results. Some
+Displays the first month and the following 11 months (this year) for any specified culture. For example, -Year 2025
+with cultures that do not use the Gregorian calendar by default will not work or produce unintended results. Some
 cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, Saudi Arabian) calendars by default.
 
 ### EXAMPLE 3
@@ -109,7 +109,7 @@ Shows 2025 through 2027
 ncal -DayOfYear -three
 ```
 
-Show the day number, starting from 1st January, for last month, this month and next month
+Show the day number, starting from 1st January, for this month as well as last month and next month.
 
 ### EXAMPLE 7
 
@@ -122,11 +122,11 @@ Show February 2026 with the month prior and month after.
 ### EXAMPLE 8
 
 ```PowerShell
-ncal -Year 2025 -Week -H Orange
+ncal -Year 2025 -Week -H Cyan
 ```
 
 Shows the specified year with a highlighted colour. Supports red, blue, green, yellow, orange, cyan, magenta and
-white. Disable all highlighting with - Highlight 'none'. Week numbers are shown below each week column and are also
+white. Disable all highlighting with -Highlight 'none'. Week numbers are shown below each week column and are also
 highlighted.
 
 ### EXAMPLE 9
@@ -161,10 +161,11 @@ each culture (different start days for the week).
 ncal -calendar Julian -m 1 -a 11
 ```
 
-Shows this month and the following 11 months in the Julian calendar.
+Shows this year in the Julian calendar.
 
-Note: This actually works, unlike the Linux ncal command (as at Feb 2025), which sometimes shows the wrong month
-(shows this Julian month but in terms of month number on the Gregorian calendar), depending on the day of the month.
+Note: This actually works corectly, unlike the Linux ncal command (as at Feb 2025), which sometimes shows the wrong
+month (shows this Julian month but in terms of month number on the Gregorian calendar), depending on the day of
+the month.
 
 ### EXAMPLE 13
 
@@ -172,7 +173,7 @@ Note: This actually works, unlike the Linux ncal command (as at Feb 2025), which
 ncal -cal Hijri -m 1 -a 11
 ```
 
-Shows this month and the following 11 months in the Hijri (Muslim) calendar.
+Shows this year in the Hijri (Muslim) calendar.
 
 Note: This is not supported with Linux ncal command.
 
@@ -330,8 +331,8 @@ Accept wildcard characters: False
 
 ### -Three
 
-Display the previous, current and next month surrounding the requested month. If -Year is also specified, this
-parameter is ignored.
+Display the current month together with the previous and following month. If -Year is also specified, this
+supercedes it.
 
 ```yaml
 Type: SwitchParameter
