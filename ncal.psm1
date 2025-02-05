@@ -1648,7 +1648,7 @@ function Get-Now {
     .SYNOPSIS
         Get today's date in any of the calendars supported by .NET
     .DESCRIPTION
-        Displays today's date in any of the calendars supported ny .NET Framework. By default, today's date for
+        Displays today's date in any of the calendars supported by .NET Framework. By default, today's date for
         every supported calendar is shown. The Gregorian calendar is always shown, to compare with the specified
         calendar.
     .NOTES

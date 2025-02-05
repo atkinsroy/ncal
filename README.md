@@ -38,6 +38,11 @@ Get-Culture -ListAvailable
 Similar to the Linux cal command with similar functionality extras, as above. Displaying full day names and week
 numbers are not supported with cal, but everything else works the same way.
 
+## Get-Now
+
+Display today's date in any of the calendars supported by .NET Framework. By default, today's date for every
+supported calendar is shown. The Gregorian calendar is always shown, to compare with the specified calendar(s).
+
 ## Globalization
 
 **ncal** and **cal** have been tested with over 800 cultures and work well providing that Windows Terminal is used
@@ -52,7 +57,7 @@ Julian calendar uses an ISO 1806 culture because, well I live in a country that 
 issue if this affects you.
 2. Some languages have really long month and day names. Rather than attempting to shorten these, they have been
 left culturally correct. Again, if this is affecting you and you can help with the specifics, I'd be prepared to
-look at this. For cultures that use extended unicode character sets, I probably will not attempt to shorten names.
+look at this. For cultures that use extended unicode character sets, I will not attempt to shorten names.
 3. The non-default calendars have no DateTimeFormat properties. So the culture that makes the most sense is used.
 For some calendars, this is ok; for example the ar-SA (Saudi Arabia) culture uses the same month names as the Hijri
 (Muslim or Islamic) calendar. But other calendars, like Hebrew, use different month names to the closest culture
@@ -63,7 +68,7 @@ but for the same reason as above, this month has no heading. This is because the
 culture uses Gregorian which has twelve months only. In summary, I don't think .NET Framework supports the none
 default calendars with respect to DateTimeFormat very well.
 5. In situations where there are 13 months in a year, the week numbers stop at 52, so the 13th month week numbers
-are incorrect (start from 1 again).
+for these longer years are incorrect (start from 1 again).
 
 ## Usage
 
