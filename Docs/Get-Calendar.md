@@ -176,7 +176,7 @@ Note: This is not supported with Linux ncal command.
 
 ### -Month
 
-Specifies the required month. This must be specified as a number 0..12. An 'f' (forward by one year) or a 'p'
+Specifies the required month. This must be specified as a number 0..13. An 'f' (forward by one year) or a 'p'
 (previous year) suffix can also be appended to the month number.
 
 ```yaml

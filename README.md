@@ -53,14 +53,14 @@ issue if this affects you.
 2. Some languages have really long month and day names. Rather than attempting to shorten these, they have been
 left culturally correct. Again, if this is affecting you and you can help with the specifics, I'd be prepared to
 look at this. For cultures that use extended unicode character sets, I probably will not attempt to shorten names.
-3. The non-optional calendars have no DateTimeFormat properties. So the culture that makes the most sense is used.
-For some calendars, this is ok; the month and day names from the ar-SA (Saudi Arabia) culture uses the same names,
-for example. But other calendars, like Hebrew, use different names to the closest culture (in this case he-IL uses
-the Gregorian calendar and has different month names in Hebrew to the Hebrew calendar). I suspect this is true for
-other calendars too.
+3. The non-default calendars have no DateTimeFormat properties. So the culture that makes the most sense is used.
+For some calendars, this is ok; for example the ar-SA (Saudi Arabia) culture uses the same month names as the Hijri
+(Muslim or Islamic) calendar. But other calendars, like Hebrew, use different month names to the closest culture
+(in this case the he-IL (Israel) culture uses the Gregorian calendar and has different month names in Hebrew to
+the Hebrew calendar). I suspect this is true for other calendars too.
 4. Some Lunar calendars have 13 months in some years. The thirteenth month displays ok when a year is specified,
 but for the same reason as above, this month has no heading. This is because the DateTimeFormat for the closest
-culture uses Gregorian which has twelve months only. In summary, I don't think .NET Framework supports none
+culture uses Gregorian which has twelve months only. In summary, I don't think .NET Framework supports the none
 default calendars with respect to DateTimeFormat very well.
 5. In situations where there are 13 months in a year, the week numbers stop at 52, so the 13th month week numbers
 are incorrect (start from 1 again).
@@ -72,7 +72,7 @@ Here are some examples of ncal usage:
 Example | Notes
 :--- | :---
 ![Default ncal display](/Images/2025-02-01-01.png) | By default, the current month is shown with today highlighted. Use '-Highlight None' to remove this highlight.
-![Month and year](/Images/2025-02-01-02.png) | The required month and year can be specified with or without -m and -y respectively. Culture is the third parameter. By default the local culture is used. Changing the culture affects the language (day and month names), the calendar used and the default first day of the month. The Americas, India, Japan and some Arabic, African and East Asian countries uses Sunday. Countries that adopt the Persian calendar (e.g. Iran, Afghanistan, Somalia and other Islamic countires) start their week on Saturday. All other countries (including Western and Eastern Europe, Russia, Asia Pacific and most of Asia) follow ISO 8601, with the week starting on Monday. According to .Net, one country, the Maldives, uses Friday. The first day of the week can be changed from the cultural default using -FirstDayOfWeek (supports Friday through Monday).
+![Month and year](/Images/2025-02-01-02.png) | The required month and year can be specified with or without -m and -y respectively. By default the local culture is used. Changing the culture affects the language (day and month names), the calendar used and the default first day of the month. The Americas, India, Japan and some Arabic, African and East Asian countries uses Sunday. Countries that adopt the Persian calendar (e.g. Iran, Afghanistan, Somalia and other Islamic countires) start their week on Saturday. All other countries (including Western and Eastern Europe, Russia, Asia Pacific and most of Asia) follow ISO 8601, with the week starting on Monday. According to .Net, one country, the Maldives, uses Friday. The first day of the week can be changed from the cultural default using -FirstDayOfWeek (supports Friday through Monday).
 ![Specify a culture](/Images/2025-02-01-03.png) | Specify the required culture and use full length day names with -LongDayNames.
 ![Use f and p for forward and previous](/Images/2025-02-01-04.png) | Use 'f' or 'p' suffix after the required month to show forward and previous by 1 year, respectively.
 ![Specify -Three](/Images/2025-02-01-05.png) |  Specify -Three to display a target month with the month prior and month after. By default, this month is the target month, but this can be changed using -Month and -Year. -Three takes priority over -Year (i.e. with the number of months to display).
