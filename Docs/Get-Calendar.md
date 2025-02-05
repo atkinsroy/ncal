@@ -1,7 +1,7 @@
 ---
 external help file: ncal-help.xml
 Module Name: ncal
-online version:
+online version: https://github.com/atkinsroy/ncal/docs
 schema: 2.0.0
 ---
 
@@ -18,7 +18,7 @@ Get-Calendar
 ```PowerShell
 Get-Calendar [[-Month] <String>] [[-Year] <Int32>] [[-Culture] <String>] [[-FirstDayOfWeek] <String>]
  [[-MonthPerRow] <Int32>] [[-Highlight] <String>] [-Before <Int32>] [-After <Int32>] [-Three] [-DayOfYear]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-Name] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### UseCalendar
@@ -26,28 +26,29 @@ Get-Calendar [[-Month] <String>] [[-Year] <Int32>] [[-Culture] <String>] [[-Firs
 ```PowerShell
 Get-Calendar [[-Month] <String>] [[-Year] <Int32>] [[-Calendar] <String>] [[-FirstDayOfWeek] <String>]
  [[-MonthPerRow] <Int32>] [[-Highlight] <String>] [-Before <Int32>] [-After <Int32>] [-Three] [-DayOfYear]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-Name] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 
-This command displays calendar information similar to the Linux cal command. It implements the same
-functionality, including the ability to display multiple months, years, day of the year and month forward and
-previous by one year.
+This command displays calendar information similar to the Linux cal command. It implements the same functionality,
+including the ability to display multiple months, years, day of the year and month forward and month previous by
+one year.
 
 But in addition, the command can do a whole lot more:
 
-1. Display a calendar in any supported culture. Month and day names are displayed in the appropriate language for
-the specified culture and the appropriate calendar is used (e.g.Gregorian, Persian).
-2. Not only display the primary calendar (used by each culture), but also display optional calendars. These are
+1. Display a calendar in any supported culture. Month and day names are displayed in the appropriate language
+for the specified culture and the appropriate calendar is used (e.g.Gregorian, Persian), along with appropriate
+DateTimeFormat information (e.g. default first day of the week).
+2. As well as display the primary calendar (used by each culture), also display optional calendars. These are
 Hijri, Hebrew, Japanese (Solar), Korean (Solar) and Taiwanese (Solar) calendars. In addition, the non-optional
 calendars (i.e. calendars not used by any culture, but still observed for religious, scientific or traditional
-purposes). These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar calendars. (Note: Only the
-current era is supported).
-3. Specify the first day of the week (Friday through Monday). The specified or current culture setting is used
-by default. Friday through Monday are supported because all cultures use one of these days.
+purposes). These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar calendars.
+(Note: Only the current era is supported).
+3. Specify the first day of the week (Friday through Monday). The specified or current culture setting is used by
+default. Friday through Monday are supported because all cultures use one of these days.
 4. Display one to six months in a row, when multiple months are displayed (the default is 3).
-5. Highlight the year and month headings, todays date and week numbers using a specified colour.
+5. Highlight the year and month headings and todays date using a specified colour.
 
 It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode
 character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code, the
@@ -62,19 +63,17 @@ sets, calendars may appear misaligned.
 cal
 ```
 
-Displays this month
+Displays this month using the current culture
 
 ### EXAMPLE 2
 
 ```PowerShell
-cal -m 1 -a 11
+cal -m 1 -a 11 -culture fa
 ```
 
-Displays this year in any culture.
-for example, -y 2025 with cultures that do not use the Gregorian calendar
-by default will not work or produce unintended results.
-Some cultures use the Persian (Iranian), ThaiBuddist
-and UmAlQura (Umm al-Qura, Saudi Arabian) calendars by default.
+Displays the current month and the following 11 months for any specified culture. For example, -Year 2025 with
+cultures that do not use the Gregorian calendar by default will not work or produce unintended results. Some
+cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, Saudi Arabian) calendars by default.
 
 ### EXAMPLE 3
 
@@ -82,78 +81,103 @@ and UmAlQura (Umm al-Qura, Saudi Arabian) calendars by default.
 cal -m 1f
 ```
 
-Displays January forward 1 year, Or January next year.
--m 1p show January from previous year
+Displays January next year. -m 4p shows April from the previous year
 
 ### EXAMPLE 4
 
 ```PowerShell
-cal -m 4 -y 2021 -b 2 -a 1
+cal -m 4 -y 2025 -b 2 -a 1
 ```
 
-Displays April 2021 with the two months before and the month after it.
+Displays April 2025 with the two months before and one month after it.
 
 ### EXAMPLE 5
 
 ```PowerShell
-cal -y 2021 -a 24
+cal -y 2025 -a 24
 ```
 
-Shows 2021 through 2023
+Shows 2025 through 2027
 
 ### EXAMPLE 6
 
 ```PowerShell
-cal -dayofweek -three
+cal -DayOfYear -Three
 ```
 
-Show day of week for last month, this month and next month
+Show the day number, starting from 1st January, for last month, this month and next month
 
 ### EXAMPLE 7
 
 ```PowerShell
-cal 2 2022 -three
+cal 2 2026 -Three
 ```
 
-Show February 2022 together with the month prior and month after.
+Show February 2026 with the month prior and month after.
 
 ### EXAMPLE 8
 
 ```PowerShell
-cal -Y 2021 -Highlight Red
+cal -Year 2025 -Highlight Orange
 ```
 
-Shows the specified year with a highlighted colour. Supports red, blue, green, yellow cyan, magenta and white.
-Disable all highlighting with 'none'.
+Shows the specified year with a highlighted colour. Supports red, blue, green, yellow, orange, cyan, magenta and
+white. Disable all highlighting with - Highlight 'none'.
 
 ### EXAMPLE 9
 
 ```PowerShell
-cal -calendar Julian -m 1 -a 11
+cal -culture ja-JP -Year 2025 -Highlight Orange
 ```
 
-Shows this month and the following 11 months on the non-optional Julian calendar.
-
-Note: This actually works, unlike the Linux cal command (as at Feb 2025), which sometimes shows the wrong
-month (shows this Julian month but in terms of month number on the Gregorian calendar), depending on the
-day of the month.
+Display a calender using the  Japanese (Japan) culture for the specified year.
 
 ### EXAMPLE 10
 
 ```PowerShell
-cal -cal Hijri -m 1 -a 11
+'Persian','Hijri','UmAlQura' | % { cal -calendar $_ -Name }
 ```
 
-Shows this month and the following 11 months on the optional Hijri calendar.
+Display three calendars (the current month) using the specified calendars with a banner to identify each culture
+and/or calendar.
 
-Note: This is not supported on Linux cal command.
+### EXAMPLE 11
+
+```PowerShell
+'en-au','en-us','dv','mzn' | % { ncal -c $_ -Name -Week -Highlight Yellow }
+```
+
+Display calendars for the specified cultures. This example illustrates the different DateTimeFormat information
+for each culture (different start days for the week).
+
+### EXAMPLE 12
+
+```PowerShell
+ncal -calendar Julian -m 1 -a 11
+```
+
+Shows this month and the following 11 months in the Julian calendar.
+
+Note: This actually works, unlike the Linux ncal command (as at Feb 2025), which sometimes shows the wrong month
+(it shows this Julian month but in terms of month number on the Gregorian calendar), depending on the day of the
+month.
+
+### EXAMPLE 13
+
+```PowerShell
+ncal -cal Hijri -m 1 -a 11
+```
+
+Shows this month and the following 11 months in the Hijri (Muslim) calendar.
+
+Note: This is not supported with Linux ncal command.
 
 ## PARAMETERS
 
 ### -Month
 
-Specifies the required month. This must be specified as a number 0..13.
-An 'f' (forward by one year) or a 'p' (previous year) suffix can also be appended to the month number.
+Specifies the required month. This must be specified as a number 0..12. An 'f' (forward by one year) or a 'p'
+(previous year) suffix can also be appended to the month number.
 
 ```yaml
 Type: String
@@ -201,8 +225,8 @@ Accept wildcard characters: False
 
 ### -Calendar
 
-Instead of culture, specify the required calendar. This provides support for non-primary calendars, like the
-Julian, Hijri and Chinese Lunar calendars.
+Instead of a culture, specify a calendar. This allows displaying optional and other calendars not used by any
+culture. They include Julian, Hijri, Hebrew and Chinese Lunar calendars.
 
 ```yaml
 Type: String
@@ -332,6 +356,22 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Name
+
+Display the name of the specified culture and/or calendar name as a banner above the calendar.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -ProgressAction
 
 {{ Fill ProgressAction Description }}
@@ -367,3 +407,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 Author: Roy Atkins
 
 ## RELATED LINKS
+
+[https://github.com/atkinsroy/ncal/docs](https://github.com/atkinsroy/ncal/docs)
