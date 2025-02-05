@@ -1025,7 +1025,7 @@ function Get-NCalendar {
             [Bool]$JulianSpecified = $false
         }
 
-        # List of short day names in the required order.
+        # List of cultural specific day names in the required order.
         if ($PSBoundParameters.ContainsKey('FirstDayOfWeek')) {
             $Param = @{
                 'Culture'         = $ThisCulture
@@ -1033,7 +1033,6 @@ function Get-NCalendar {
                 'JulianSpecified' = $JulianSpecified
                 'LongDayName'     = $LongDayName
             }
-            $WeekDay = Get-WeekDayName @Param
         }
         else {
             $DefaultFirstDay = $ThisCulture.DateTimeFormat.FirstDayOfWeek
@@ -1043,42 +1042,43 @@ function Get-NCalendar {
                 'JulianSpecified' = $JulianSpecified
                 'LongDayName'     = $LongDayName
             }
-            $WeekDay = Get-WeekDayName @Param
-
-            # Get the date of the first day of each required month, based on the culture (common to ncal & cal)
-            $DateParam = New-Object -TypeName System.Collections.Hashtable
-            $DateParam.Add('Calendar', $ThisCalendar)
-            if ($PSBoundParameters.ContainsKey('Month')) {
-                $DateParam.Add('Month', $Month)
-            }
-            if ($PSBoundParameters.ContainsKey('Year')) {
-                $DateParam.Add('Year', $Year)
-            }
-            if ($PSBoundParameters.ContainsKey('Before')) {
-                $DateParam.Add('Before', $Before)
-            }
-            if ($PSBoundParameters.ContainsKey('After')) {
-                $DateParam.Add('After', $After)
-            }
-            if ($PSBoundParameters.ContainsKey('Three')) {
-                $DateParam.Add('Three', $Three)
-            }
-            # this is where most parameter validation occurs, and most of the date conversion stuff.
-            try {
-                $MonthList = Get-FirstDayOfMonth @DateParam -ErrorAction Stop
-            }
-            catch {
-                Write-Error $PSItem.Exception.Message
-                $Abort = $true
-            }
-
-            # To hold each row of 1 to 6 months, initialized with culture specific day abbreviation
-            [System.Collections.Generic.List[String]]$MonthRow = $WeekDay.Name
-            $MonthCount = 0
-            $MonthHeading = ' ' * $WeekDay.Offset
-            $WeekRow = ' ' * ($WeekDay.Offset - 1)
         }
+        $WeekDay = Get-WeekDayName @Param
+
+        # Get the date of the first day of each required month, based on the culture (common to ncal & cal)
+        $DateParam = New-Object -TypeName System.Collections.Hashtable
+        $DateParam.Add('Calendar', $ThisCalendar)
+        if ($PSBoundParameters.ContainsKey('Month')) {
+            $DateParam.Add('Month', $Month)
+        }
+        if ($PSBoundParameters.ContainsKey('Year')) {
+            $DateParam.Add('Year', $Year)
+        }
+        if ($PSBoundParameters.ContainsKey('Before')) {
+            $DateParam.Add('Before', $Before)
+        }
+        if ($PSBoundParameters.ContainsKey('After')) {
+            $DateParam.Add('After', $After)
+        }
+        if ($PSBoundParameters.ContainsKey('Three')) {
+            $DateParam.Add('Three', $Three)
+        }
+        # this is where most parameter validation occurs, and most of the date conversion stuff.
+        try {
+            $MonthList = Get-FirstDayOfMonth @DateParam -ErrorAction Stop
+        }
+        catch {
+            Write-Error $PSItem.Exception.Message
+            $Abort = $true
+        }
+
+        # To hold each row of 1 to 6 months, initialized with culture specific day abbreviation
+        [System.Collections.Generic.List[String]]$MonthRow = $WeekDay.Name
+        $MonthCount = 0
+        $MonthHeading = ' ' * $WeekDay.Offset
+        $WeekRow = ' ' * ($WeekDay.Offset - 1)
     }
+    
     process {
         foreach ($RequiredMonth in $MonthList) {
             if ($true -eq $Abort) {
