@@ -268,8 +268,8 @@ function Get-MonthHeading {
 function Get-FirstDayOfMonth {
     <# 
         .NOTES
-        Helper function for Get-NCalendar and Get-Calendar that returns the date and day name of the first day of each 
-        required month, using the specified calendar. This function performs the paramters validation for both 
+        Helper function for Get-NCalendar and Get-Calendar that returns the date and day name of the first day of
+        each required month, using the specified calendar. This function performs the paramters validation for both 
         ncal and cal.
     #>
     [CmdletBinding()]
@@ -296,7 +296,6 @@ function Get-FirstDayOfMonth {
     )
 
     process {
-        # Todays date in specified culture
         $Now = Get-Today -Calendar $Calendar
         Write-Verbose "today year = $($Now.Year), today month = $($Now.Month), today day = $($Now.Day)"
 
@@ -311,7 +310,9 @@ function Get-FirstDayOfMonth {
                 $YearSpecified = $false
             }
 
-            if ($Month -in 1..12) {
+            # not going to allow 13 is be specified just for the Asian Lunar calendars as it introduces lots of
+            # additional error checking. For now, 13th month can be shown with -three or -year.
+            if ($Month -in 1..13) {
                 [Int]$MonthNumber = $Month
             }
             # trailing 'f' means month specified, but next year required
@@ -328,6 +329,15 @@ function Get-FirstDayOfMonth {
                 Write-Error "'$Month' is not a valid month number"
                 return
             }
+            <#
+                add additional month before and after required month. This is better than Linux ncal. It allows
+                a month in any year to be specified with -three. Linux ncal just ignores -three (-3) and displays
+                the specified year.
+            #>
+            if ($PSBoundParameters.ContainsKey('Three')) {
+                [Int]$BeforeOffset = 1
+                [Int]$AfterOffset = 1
+            }
         }
         else {
             # No month
@@ -337,21 +347,28 @@ function Get-FirstDayOfMonth {
                 [Int]$BeforeOffset = 0
                 [Int]$AfterOffset = ($Calendar.GetMonthsInYear($Year) - 1)
                 $YearSpecified = $true
+                if ($PSBoundParameters.ContainsKey('Three')) {
+                    <#
+                        If we allow -year and -three (with no -month) then we get the first month of specified
+                        year with the month before and after. This feels like a bug, so ignore -three in this case.
+                    #>
+                    Write-Warning 'The Three parameter is ignored when Year is specified with no Month.'
+                }
             }
             else {
                 # Default is this month only
                 $MonthNumber = $Now.Month
                 $Year = $Now.Year
                 $YearSpecified = $false
+                # add additional month before and after this month.
+                if ($PSBoundParameters.ContainsKey('Three')) {
+                    [Int]$BeforeOffset = 1
+                    [Int]$AfterOffset = 1
+                }
             }
         }
 
-        # add additional month before and after current month.
-        if ($PSBoundParameters.ContainsKey('Three')) {
-            [Int]$BeforeOffset = 1
-            [Int]$AfterOffset = 1
-        }
-        # add specified number of months before the month or year already identified
+        # add specified number of months before the month(s) or year already identified
         if ($PSBoundParameters.ContainsKey('Before')) {
             $BeforeOffset += $Before
         }
@@ -436,15 +453,15 @@ function Get-StartWeekIndex {
                 $ThisIndex = 0
             }
         }
+        # Monday = 0 thru Sunday = -6, which would mean start on next column, so force Sunday to be 1
         elseif ('Sunday' -eq $StartWeekDay) {
-            # Monday = 0 thru Sunday = -6, which would mean start on next column, so force Sunday to be 1
             $ThisIndex = 1 - $FirstDayIndex
             if ($ThisIndex -eq -6) {
                 $ThisIndex = 1
             }
         }
+        # Week starts Monday. Here we need Monday = 1 thru Sunday = -5
         else {
-            # Week starts Monday. Here we need Monday = 1 thru Sunday = -5
             $ThisIndex = 2 - $FirstDayIndex
             if ($ThisIndex -eq 2) {
                 $ThisIndex = -5
@@ -655,7 +672,7 @@ function Get-WeekRow {
         [String]$WeekRow = ''
         [Int]$WeekCount = 5
 
-        # month starts last day or week and has at least 30 days is 6 columns wide
+        # month starts last day of week and has at least 30 days is 6 columns wide
         if (-5 -eq $Index -and $DayPerMonth -ge 30) {
             $WeekCount = 6
         }
@@ -712,7 +729,7 @@ function Get-Highlight {
         [Int]$Year,
 
         [Parameter(Position = 3)]
-        [ValidateSet('None', 'Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Magenta', 'White', 'Orange', $null)]
+        [ValidateSet('None', 'Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Magenta', 'White', 'Orange', 'Pink', $null)]
         [String]$Highlight
     )
 
@@ -740,13 +757,22 @@ function Get-Highlight {
                 Today = 0
             }
         }
+        # Just for giggles, demonstrate some non-PSStyle supplied colours
         elseif ('Orange' -eq $Highlight) {
-            # To demonstrate a non-PSStyle supplied colour
             Write-Output @{
                 Today    = $Today
                 MonStyle = "$($PSStyle.Foreground.FromRgb(255,131,0))$($PSStyle.Bold)"
                 MonReset = $PSStyle.Reset
                 DayStyle = "$($PSStyle.Background.FromRgb(255,131,0))$($PSStyle.Foreground.FromRgb(0,0,0))"
+                DayReset = $PSStyle.Reset
+            }
+        }
+        elseif ('Pink' -eq $Highlight) {
+            Write-Output @{
+                Today    = $Today
+                MonStyle = "$($PSStyle.Foreground.FromRgb(255,0,255))$($PSStyle.Bold)"
+                MonReset = $PSStyle.Reset
+                DayStyle = "$($PSStyle.Background.FromRgb(255,0,255))$($PSStyle.Foreground.FromRgb(0,0,0))"
                 DayReset = $PSStyle.Reset
             }
         }
@@ -818,8 +844,8 @@ function Get-NCalendar {
         selected by the -Year or -Three options. Negative numbers are allowed, in which case the specified number 
         of months is subtracted. For example ncal -after 11 simply shows the next 12 months in any culture.
     .PARAMETER Three
-        Display the current month together with the previous and following month. If -Year is also specified, this 
-        supercedes it.
+        Display the current month together with the previous and following month. This is ignored if -Year is also 
+        specified without a month.
     .PARAMETER DayOfYear
         Display the day of the year (days one-based, numbered from 1st January).
     .PARAMETER Week
@@ -864,7 +890,7 @@ function Get-NCalendar {
         PS C:> ncal -Year 2025 -Week -H Cyan
 
         Shows the specified year with a highlighted colour. Supports red, blue, 
-        green, yellow, orange, cyan, magenta and white. Disable all highlighting with - Highlight 'none'. Week
+        green, yellow, orange, pink, cyan, magenta and white. Disable all highlighting with - Highlight 'none'. Week
         numbers are shown below each week column and are also highlighted.
     .EXAMPLE
         PS C:> ncal -culture ja-JP -Year 2025 -Highlight Orange
@@ -944,11 +970,12 @@ function Get-NCalendar {
         [String]$FirstDayOfWeek,
 
         [Parameter(Position = 4)]
+        [Alias('r', 'row')]
         [ValidateRange(1, 6)]
         [Int]$MonthPerRow = 4,
 
         [Parameter(Position = 5)]
-        [ValidateSet('None', 'Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Magenta', 'White', 'Orange')]
+        [ValidateSet('None', 'Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Magenta', 'White', 'Orange', 'Pink')]
         [String]$Highlight,
 
         [Int]$Before,
@@ -971,12 +998,19 @@ function Get-NCalendar {
         if ($PSBoundParameters.ContainsKey('Culture')) {
             try {
                 $ThisCulture = New-Object System.Globalization.CultureInfo($Culture) -ErrorAction Stop
+                # The above doesn't alway capture a dodgy culture so test further
+                $AllCulture = (Get-Culture -ListAvailable).Name
+                if ($Culture -notin $AllCulture) {
+                    Write-Warning "Invalid culture: '$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
+                    $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
+                } 
             }
             catch {
                 Write-Warning "Invalid culture specified:'$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
                 $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
             }
             $ThisCalendar = $ThisCulture.Calendar
+
         }
         elseif ($PSBoundParameters.ContainsKey('Calendar')) {
             $CultureLookup = @{
@@ -995,7 +1029,11 @@ function Get-NCalendar {
                 'KoreanLunisolar'   = 'ko'
                 'TaiwanLunisolar'   = 'zh-Hant-TW'
             }
-            # This method only works for the Optional calendars of a culture.
+            <#
+                In order to support Julian and Asian Lunar calendars ('non-optional'), treat culture and calendar
+                separately. With optional calenders you can set the culture to use them, but this doesn't work for
+                the above.
+            #>
             $ThisCulture = New-Object System.Globalization.CultureInfo($($CultureLookup[$Calendar]))
             $ThisCalendar = New-Object "System.Globalization.$($Calendar)Calendar"
         }
@@ -1028,21 +1066,16 @@ function Get-NCalendar {
 
         # List of cultural specific day names in the required order.
         if ($PSBoundParameters.ContainsKey('FirstDayOfWeek')) {
-            $Param = @{
-                'Culture'         = $ThisCulture
-                'FirstDayOfWeek'  = $FirstDayOfWeek
-                'JulianSpecified' = $JulianSpecified
-                'LongDayName'     = $LongDayName
-            }
+            $FirstDay = $FirstDayOfWeek
         }
         else {
-            $DefaultFirstDay = $ThisCulture.DateTimeFormat.FirstDayOfWeek
-            $Param = @{
-                'Culture'         = $ThisCulture
-                'FirstDayOfWeek'  = $DefaultFirstDay
-                'JulianSpecified' = $JulianSpecified
-                'LongDayName'     = $LongDayName
-            }
+            $FirstDay = $ThisCulture.DateTimeFormat.FirstDayOfWeek
+        }
+        $Param = @{
+            'Culture'         = $ThisCulture
+            'FirstDayOfWeek'  = $FirstDay
+            'JulianSpecified' = $JulianSpecified
+            'LongDayName'     = $LongDayName
         }
         $WeekDay = Get-WeekDayName @Param
 
@@ -1091,6 +1124,9 @@ function Get-NCalendar {
             $FirstDayIndex = $RequiredMonth.FirstDayIndex
             $YearSpecified = $RequiredMonth.YearSpecified
             $MonthName = $MonthNameArray[$ThisMonth - 1]  # MonthNameArray is zero based
+            if (13 -eq $ThisMonth) {
+                $MonthName = '13'
+            }
             if ($PSBoundParameters.ContainsKey('Three') -or $PSBoundParameters.ContainsKey('Month') -or $false -eq $YearSpecified) {
                 $MonthName = "$MonthName $ThisYear"
             }
@@ -1281,8 +1317,8 @@ function Get-Calendar {
         selected by the -Year or -Three options. Negative numbers are allowed, in which case the specified number 
         of months is subtracted. For example ncal -after 11 simply shows the next 12 months in any culture.
     .PARAMETER Three
-        Display the current month together with the previous and following month. If -Year is also specified, this 
-        supercedes it.
+        Display the current month together with the previous and following month. This is ignored if -Year is also 
+        specified without a month.
     .PARAMETER DayOfYear
         Display the day of the year (days one-based, numbered from 1st January).
     .PARAMETER Name
@@ -1322,7 +1358,7 @@ function Get-Calendar {
         PS C:> cal -Year 2025 -Highlight Cyan
 
         Shows the specified year with a highlighted colour. Supports red, blue, 
-        green, yellow, orange, cyan, magenta and white. Disable all highlighting with - Highlight 'none'.
+        green, yellow, orange, pink, cyan, magenta and white. Disable all highlighting with - Highlight 'none'.
     .EXAMPLE
         PS C:> cal -culture ja-JP -Year 2025 -Highlight Orange
 
@@ -1401,11 +1437,12 @@ function Get-Calendar {
         [String]$FirstDayOfWeek,
 
         [parameter(Position = 4)]
+        [Alias('r', 'row')]
         [ValidateRange(1, 6)]
         [Int]$MonthPerRow = 3,
 
         [parameter(Position = 5)]
-        [ValidateSet('None', 'Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Magenta', 'White', 'Orange')]
+        [ValidateSet('None', 'Red', 'Green', 'Blue', 'Yellow', 'Cyan', 'Magenta', 'White', 'Orange', 'Pink')]
         [String]$Highlight,
 
         [Int]$Before,
@@ -1424,6 +1461,12 @@ function Get-Calendar {
         if ($PSBoundParameters.ContainsKey('Culture')) {
             try {
                 $ThisCulture = New-Object System.Globalization.CultureInfo($Culture) -ErrorAction Stop
+                # The above doesn't alway capture a dodgy culture so test further
+                $AllCulture = (Get-Culture -ListAvailable).Name
+                if ($Culture -notin $AllCulture) {
+                    Write-Warning "Invalid culture: '$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
+                    $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
+                } 
             }
             catch {
                 Write-Warning "Invalid culture specified:'$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
@@ -1448,7 +1491,11 @@ function Get-Calendar {
                 'KoreanLunisolar'   = 'ko'
                 'TaiwanLunisolar'   = 'zh-Hant-TW'
             }
-            # This method only works for the Optional calendars of a culture.
+            <#
+                In order to support Julian and Asian Lunar calendars ('non-optional'), treat culture and calendar
+                separately. With optional calenders you can set the culture to use them, but this doesn't work for
+                the above.
+            #>
             $ThisCulture = New-Object System.Globalization.CultureInfo($($CultureLookup[$Calendar]))
             $ThisCalendar = New-Object "System.Globalization.$($Calendar)Calendar"
         }
@@ -1479,21 +1526,17 @@ function Get-Calendar {
             [Bool]$JulianSpecified = $false
         }
 
-        # List of short day names in the required order.
+        # List of cultural specific day names in the required order.
         if ($PSBoundParameters.ContainsKey('FirstDayOfWeek')) {
-            $Param = @{
-                'Culture'         = $ThisCulture
-                'FirstDayOfWeek'  = $FirstDayOfWeek
-                'JulianSpecified' = $JulianSpecified
-            }
+            $FirstDay = $FirstDayOfWeek
         }
         else {
-            $DefaultFirstDay = $ThisCulture.DateTimeFormat.FirstDayOfWeek
-            $Param = @{
-                'Culture'         = $ThisCulture
-                'FirstDayOfWeek'  = $DefaultFirstDay
-                'JulianSpecified' = $JulianSpecified
-            }
+            $FirstDay = $ThisCulture.DateTimeFormat.FirstDayOfWeek
+        }
+        $Param = @{
+            'Culture'         = $ThisCulture
+            'FirstDayOfWeek'  = $FirstDay
+            'JulianSpecified' = $JulianSpecified
         }
         $WeekDay = Get-WeekDayName @Param
 
@@ -1540,6 +1583,9 @@ function Get-Calendar {
             $FirstDayIndex = $RequiredMonth.FirstDayIndex
             $YearSpecified = $RequiredMonth.YearSpecified
             $MonthName = $MonthNameArray[$ThisMonth - 1]  # MonthNameArray is zero based
+            if (13 -eq $ThisMonth) {
+                $MonthName = '13'
+            }
             if ($PSBoundParameters.ContainsKey('Three') -or $PSBoundParameters.ContainsKey('Month') -or $false -eq $YearSpecified) {
                 $MonthName = "$MonthName $ThisYear"
             }
@@ -1651,8 +1697,6 @@ function Get-Now {
         Displays today's date in any of the calendars supported by .NET Framework. By default, today's date for
         every supported calendar is shown. The Gregorian calendar is always shown, to compare with the specified
         calendar.
-    .NOTES
-        Information or caveats about the function e.g. 'This function is not supported in Linux'
     .LINK
         https://github.com/atkinsroy/ncal/docs
     .EXAMPLE
