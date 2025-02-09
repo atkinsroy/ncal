@@ -56,24 +56,24 @@ month can be specified as the required month, but read later for problems suppor
 ## Known Problems
 
 1. All culture based calendars display well, except for cultures using the Chakma language (ccp, ccp-BD and
-ccp-IN). Log an issue if this affects you.
+ccp-IN) which is misaligned because of varying lengths in the unicode characters. Log an issue if this affects you.
 2. Some languages have really long month and day names. Rather than attempting to shorten these, they have been
 left culturally correct. Again, if this is affecting you and you can help with the specifics, I'd be prepared to
 look at this. For cultures that use extended unicode character sets, I will not attempt to shorten names. In mean
 time, you can set -MonthInRow (or -r) to 1.
 3. The non-default calendars have no DateTimeFormat properties of their own. So the culture that makes the most
 sense is used. For some calendars, this is partially ok; for example the ar-SA (Saudi Arabia) culture uses the same
-month names as the Hijri (Islamic or Muslim) calendar. But other calendars, like Hebrew, use different month names
-to the closest culture (in this case the he-IL (Israel) culture uses the Gregorian calendar and has different month
-names in Hebrew to the Hebrew calendar). I suspect this is true for other calendars too. This also affects week
-numbers and is especially noticeable with the Asian lunar calendars in years that have 13 months. The Julian, Hijri
-and Hebrew calendars are also affected. In these cases, displaying week numbers is not supported. The Asian solar
-calendars are ok.
+month names as the Hijri (Islamic or Muslim) calendar. But for other calendars, like Hebrew, they use different
+month names from the closest culture (in this case, the he-IL (Israel) culture uses the Gregorian calendar and has
+different month names in Hebrew to the Hebrew calendar). I suspect this is true for other calendars too. This also
+affects week numbers and is especially noticeable with the Asian lunar calendars in years that have 13 months. The
+Julian, Hijri and Hebrew calendars are also affected. In these cases, displaying week numbers is not supported.
+The Asian solar calendars are ok.
 4. Some lunar calendars have 13 months in some years. The thirteenth month displays ok when a year is specified,
 but for the same reason as above, this month has no month name; the DateTimeFormat for the closest culture uses
 Gregorian which has twelve months only. In these situations, the month name will be shown as '13'. In summary,
-I don't think .NET Framework supports the none default calendars with respect to DateTimeFormat very well (unless
-I am missing something).
+I don't think .NET Framework supports the none default calendars, with respect to DateTimeFormat, very well.
+(Unless I am missing something).
 
 ## Usage
 
