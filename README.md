@@ -13,7 +13,9 @@ the specified culture and the appropriate calendar is used (e.g. Gregorian, Pers
 DateTimeFormat information (e.g. default first day of the week).
 2. As well as display the primary calendar (used by each culture), also display optional calendars. These are
 Hijri (Islamic or Muslim), Hebrew, Japanese (Solar), Korean (Solar) and Taiwanese (Solar) calendars. In addition,
-the non-optional calendars are supported. These are calendars not used by any culture, but still observed for religious, scientific or traditional purposes. Namely the Julian and Chinese, Japanese, Korean and Taiwanese Lunar calendars. (Note: Only the current era is supported).
+the non-optional calendars are supported. These are calendars not used by any culture, but still observed for
+religious, scientific or traditional purposes. Namely the Julian and Chinese, Japanese, Korean and Taiwanese
+lunar calendars. (Note: Only the current era is supported).
 3. Specify the first day of the week (Friday through Monday). The specified or current culture setting is used by
 default. Friday through Monday are supported because all cultures use one of these days.
 4. Display one to six months in a row, when multiple months are displayed (the default is 4).
@@ -46,26 +48,30 @@ supported calendar is shown. The Gregorian calendar is always shown, to compare 
 **ncal** and **cal** have been tested with over 800 cultures and work well providing that Windows Terminal is used
 together with a font that supports unicode character sets. (I have been using the Lilex Nerd Font during the
 development of ncal). In addition, calendars not primarily used by a culture are supported. These include the
-Julian, Hijra (Islamic or Muslim calendar), Chinese Lunar, Hebrew and several other calendars which are observed in many parts of the world for religious or scientific purposes. Note that the Julian calendar uses an ISO 1806
-culture because, well I live in a country that follows this standard. With the Asian Lunar calendars, the 13th
+Julian, Hijra (Islamic or Muslim calendar), Chinese lunar, Hebrew and several other calendars which are observed
+in many parts of the world for religious or scientific purposes. Note that the Julian calendar uses an ISO 1806
+culture because, well I live in a country that follows this standard. With the Asian lunar calendars, the 13th
 month can be specified as the required month, but read later for problems supporting non-default calendars.
 
 ## Known Problems
 
-1. All calendars display well, except for cultures using the Chakma language (ccp, ccp-BD and ccp-IN). Log an
-issue if this affects you.
+1. All culture based calendars display well, except for cultures using the Chakma language (ccp, ccp-BD and
+ccp-IN). Log an issue if this affects you.
 2. Some languages have really long month and day names. Rather than attempting to shorten these, they have been
 left culturally correct. Again, if this is affecting you and you can help with the specifics, I'd be prepared to
 look at this. For cultures that use extended unicode character sets, I will not attempt to shorten names. In mean
 time, you can set -MonthInRow (or -r) to 1.
-3. The non-default calendars have no DateTimeFormat properties. So the culture that makes the most sense is used.
-For some calendars, this is ok; for example the ar-SA (Saudi Arabia) culture uses the same month names as the Hijri
-(Islamic or Muslim) calendar. But other calendars, like Hebrew, use different month names to the closest culture
-(in this case the he-IL (Israel) culture uses the Gregorian calendar and has different month names in Hebrew to
-the Hebrew calendar). I suspect this is true for other calendars too. This also affects week numbers and is
-especially noticeable with the Asian Lunar calendars in years that have 13 months.
-4. Some Lunar calendars have 13 months in some years. The thirteenth month displays ok when a year is specified,
-but for the same reason as above, this month has no month name; the DateTimeFormat for the closest culture uses Gregorian which has twelve months only. In these situations, the month name will be shown as '13'. In summary,
+3. The non-default calendars have no DateTimeFormat properties of their own. So the culture that makes the most
+sense is used. For some calendars, this is partially ok; for example the ar-SA (Saudi Arabia) culture uses the same
+month names as the Hijri (Islamic or Muslim) calendar. But other calendars, like Hebrew, use different month names
+to the closest culture (in this case the he-IL (Israel) culture uses the Gregorian calendar and has different month
+names in Hebrew to the Hebrew calendar). I suspect this is true for other calendars too. This also affects week
+numbers and is especially noticeable with the Asian lunar calendars in years that have 13 months. The Julian, Hijri
+and Hebrew calendars are also affected. In these cases, displaying week numbers is not supported. The Asian solar
+calendars are ok.
+4. Some lunar calendars have 13 months in some years. The thirteenth month displays ok when a year is specified,
+but for the same reason as above, this month has no month name; the DateTimeFormat for the closest culture uses
+Gregorian which has twelve months only. In these situations, the month name will be shown as '13'. In summary,
 I don't think .NET Framework supports the none default calendars with respect to DateTimeFormat very well (unless
 I am missing something).
 

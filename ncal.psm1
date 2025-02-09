@@ -1052,6 +1052,23 @@ function Get-NCalendar {
             Write-Output "`n$($PSStyle.Reverse)--|$($ThisCulture.Name)|-|$($ThisCulture.DisplayName)|-|$CalendarString|--$($PSStyle.ReverseOff)`n"
         }
 
+        # Some optional calendars don't display week numbers accurately. In these case don't display week numbers
+        $IgnoreWeekRow = $false
+        $IgnoreCalendar = @(
+            'HijriCalendar',
+            'HebrewCalendar',
+            'JulianCalendar',
+            'ChineseLunisolarCalendar',
+            'JapaneseLunisolarCalendar',
+            'KoreanLunisolarCalendar',
+            'TaiwanLunisolarCalendar'
+        )
+        $CompareCalender = $($ThisCalendar.ToString().Replace('System.Globalization.', ''))
+        if ($PSBoundParameters.ContainsKey('Week') -and $CompareCalender -in $IgnoreCalendar) {
+            $IgnoreWeekRow = $true
+            Write-Warning "Displaying week numbers is not supported with the $($CompareCalender.Replace('Calendar',' calendar'))"
+        }
+
         # Full month names in current culture
         $MonthNameArray = $ThisCulture.DateTimeFormat.MonthGenitiveNames
 
@@ -1174,7 +1191,7 @@ function Get-NCalendar {
                     'JulianSpecified' = $JulianSpecified
                 }
                 $MonthHeading += "$(Get-MonthHeading @Param)"
-                if ($PSBoundParameters.ContainsKey('Week')) {
+                if ($PSBoundParameters.ContainsKey('Week') -and -not $IgnoreWeekRow) {
                     $Param = @{
                         'Culture'         = $ThisCulture
                         'Calendar'        = $ThisCalendar
@@ -1196,7 +1213,7 @@ function Get-NCalendar {
                 }
                 Write-Output "$($Pretty.MonStyle)$MonthHeading$($Pretty.MonReset)"
                 Write-Output $MonthRow
-                if ($PSBoundParameters.ContainsKey('Week')) {
+                if ($PSBoundParameters.ContainsKey('Week') -and -not $IgnoreWeekRow) {
                     Write-Output "$($Pretty.MonStyle)$WeekRow$($Pretty.MonReset)"
                 }
                 Write-Output ''
@@ -1210,7 +1227,7 @@ function Get-NCalendar {
                     'JulianSpecified' = $JulianSpecified
                 }
                 $MonthHeading = (' ' * $WeekDay.Offset) + "$(Get-MonthHeading @Param)"
-                if ($PSBoundParameters.ContainsKey('Week')) {
+                if ($PSBoundParameters.ContainsKey('Week') -and -not $IgnoreWeekRow) {
                     $Param = @{
                         'Culture'         = $ThisCulture
                         'Calendar'        = $ThisCalendar
@@ -1259,7 +1276,7 @@ function Get-NCalendar {
             }
             Write-Output "$($Pretty.MonStyle)$MonthHeading$($Pretty.MonReset)"
             Write-Output $MonthRow
-            if ($PSBoundParameters.ContainsKey('Week')) {
+            if ($PSBoundParameters.ContainsKey('Week') -and -not $IgnoreWeekRow) {
                 Write-Output "$($Pretty.MonStyle)$WeekRow$($Pretty.MonReset)"
             }
         }
@@ -1593,10 +1610,10 @@ function Get-Calendar {
             # for highlighting today
             $Pretty = Get-Highlight $ThisCalendar $ThisMonth $ThisYear $Highlight
             if ($PSBoundParameters.ContainsKey('Calendar')) {
-                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, calendar = $($ThisCalendar.ToString().Replace('System.Globalization.', '')), era = $($ThisCalendar.Eras[0])"
+                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, calendar = $($ThisCalendar.ToString().Replace('System.Globalization.', '')), era = $($ThisCalendar.Eras[0])'
             }
             else {
-                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, culture = $($ThisCulture.Name)"
+                Write-Verbose 'monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, culture = $($ThisCulture.Name)"
             }
 
             # User specified First day of the week, or use the default for the culture being used.
