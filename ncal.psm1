@@ -245,6 +245,7 @@ function Get-MonthHeading {
             # and Yi have two. This is a rough hack, but it works.
             if ($Culture.Name -match '^(ja|zh-hant|ko$|ko\-)') { $HeadingLength -= 1 }
             if ($Culture.Name -match '^(zh$|zh-hans|ii)') { $HeadingLength -= 2 }
+            # cal month headings are centred.
             $Pad = $MonthName.Length + (($HeadingLength - 2 - $MonthName.Length) / 2)
             $MonthHeading = ($MonthName.PadLeft($Pad, ' ')).PadRight($HeadingLength, ' ')
 
@@ -252,14 +253,14 @@ function Get-MonthHeading {
         # Get-NCalendar is the (default) calling function
         else {
             if ($true -eq $JulianSpecified) {
-                $Pad = 24
+                $HeadingLength = 24
             }
             else {
-                $Pad = 19
+                $HeadingLength = 19
             }
-            if ($Culture.Name -match '^(ja|zh-hant|ko$|ko\-)') { $Pad -= 1 }
-            if ($Culture.Name -match '^(zh$|zh-hans|ii)') { $Pad -= 2 }
-            $MonthHeading = "$MonthName".PadRight($Pad, ' ')
+            if ($Culture.Name -match '^(ja|zh-hant|ko$|ko\-)') { $HeadingLength -= 1 }
+            if ($Culture.Name -match '^(zh$|zh-hans|ii)') { $HeadingLength -= 2 }
+            $MonthHeading = "$MonthName".PadRight($HeadingLength, ' ')
         }
         Write-Output $MonthHeading
     }
@@ -268,9 +269,9 @@ function Get-MonthHeading {
 function Get-FirstDayOfMonth {
     <# 
         .NOTES
-        Helper function for Get-NCalendar and Get-Calendar that returns the date and day name of the first day of
-        each required month, using the specified calendar. This function performs the paramters validation for both 
-        ncal and cal.
+        Helper function for Get-NCalendar and Get-Calendar that returns the date and day position of the first day 
+        of each required month, using the specified calendar. This function performs the parameter validation for 
+        both ncal and cal.
     #>
     [CmdletBinding()]
     param (
@@ -331,8 +332,8 @@ function Get-FirstDayOfMonth {
             }
             <#
                 add additional month before and after required month. This is better than Linux ncal. It allows
-                a month in any year to be specified with -three. Linux ncal just ignores -three (-3) and displays
-                the specified year.
+                a month in any year to be specified with -three. Linux ncal just ignores -3 and displays the 
+                specified year.
             #>
             if ($PSBoundParameters.ContainsKey('Three')) {
                 [Int]$BeforeOffset = 1
@@ -380,7 +381,7 @@ function Get-FirstDayOfMonth {
         <#
             Parameter validation complete. We have the required months to show, and a target month (typically this
             month or possibly first month of required year). Get the date object of the first day of the specified
-            month and then use this to determine the date object of the first day of the first require month.
+            month and then use this to determine the date object of the first day of the first required month.
         #>
         $MonthCount = 1 + $BeforeOffset + $AfterOffset
         try {
@@ -474,11 +475,11 @@ function Get-StartWeekIndex {
 function Get-WeekDayName {
     <#
         .NOTES
-        Determine the localized week day names. There are globalisation issues with attempting to truncate day 
+        Determine the localized week day names. There are globalisation issues with attempting to truncate day
         names in some cultures, so only truncate cultures with standard character sets.
 
-        For ncal only, MonthOffset is an attempt to fix column formats with many cultures that have mixed length 
-        short and long day names. It seems to work ok providing an appropriate font is installed supporting unicode 
+        For ncal only, MonthOffset is an attempt to fix column formats with many cultures that have mixed length
+        short and long day names. It seems to work ok providing an appropriate font is installed supporting unicode
         characters.
 
         According .Net, just one language (Dhivehi - cultures dv and dv-MV), spoken in Maldives, has a week day 
@@ -515,7 +516,7 @@ function Get-WeekDayName {
     }
     process {
         if ($CallingFunction -eq 'Get-Calendar') {
-            # Some cultures use double width character sets. So attempt to capture these and do not pad day names
+            # Some cultures use double width character sets. Attempt to capture these and do not pad day names
             if ($Culture.Name -match '^(ja|zh|ko$|ko\-|ii)') {
                 $WeekDay = $Culture.DateTimeFormat.ShortestDayNames
                 if ($true -eq $JulianSpecified) {
@@ -524,13 +525,13 @@ function Get-WeekDayName {
                 }
             }
             else {
-                # Truncate some Abbreviated day names to two characters (e.g. Mo, Tu), rather than Shortest day names (e.g. M, T)
-                # for some Western and other languages.
+                # Truncate some Abbreviated day names to two characters (e.g. Mo, Tu), rather than Shortest day 
+                # names (e.g. M, T) for some Western and other languages.
                 if ($Culture.Name -match '^(da|de|es|eo|en|fr|it|pt|wo|fil)') {
                     $WeekDay = $Culture.DateTimeFormat.AbbreviatedDayNames | ForEach-Object { "$_".Substring(0, 2) }
                 }
                 else {
-                    # Quite a lot of cultures use a single character, so ensure the names are 2 characters.
+                    # Most cultures use a single character, so ensure the names are 2 characters.
                     $WeekDay = $Culture.DateTimeFormat.ShortestDayNames | ForEach-Object { "$_".PadLeft(2, ' ') }
                 }
                 if ($true -eq $JulianSpecified) {
@@ -546,7 +547,8 @@ function Get-WeekDayName {
                 $WeekDayLong = $Culture.DateTimeFormat.DayNames
                 Write-Verbose "Long week day - $WeekDayLong"
                 if ($Culture.Name -match '^(ja|zh|ko$|ko\-|ii)') {
-                    # Full day name for cultures that use double width character sets, double the size of the month offset but not the weekday  
+                    # Full day name for cultures that use double width character sets, double the size of the month 
+                    # offset but not the weekday  
                     $MonthOffset = 2 + ((($WeekDayLong | ForEach-Object { "$_".Length } | Measure-Object -Maximum).Maximum) * 2)
                     $WeekDayLength = ($WeekDayLong | ForEach-Object { "$_".Length } | Measure-Object -Maximum).Maximum
                     $WeekDay = $WeekDayLong | ForEach-Object { "$_".PadRight($WeekDayLength + 1, ' ') }
@@ -578,7 +580,6 @@ function Get-WeekDayName {
                 }
             }
         }
-
         Write-Verbose "Specified/assumed first day of week is $FirstDayOfWeek"
         Write-Verbose "Cultural first day of the week is $($Culture.DateTimeFormat.FirstDayOfWeek)"
 
@@ -602,12 +603,12 @@ function Get-WeekDayName {
 function Get-WeekRow {
     <#
         .NOTES
-        Helper function for Get-NCalendar. Prints the week number to display beneath each column
+        Helper function for Get-NCalendar. Displays the week number beneath each column.
 
         Uses a .Net call to obtain the week number for the first week of the month for the required culture. We use 
         the specified first day of the week to ensure the week numbers align (although this is not culturally 
         correct). Otherwise, we are using the default first day of the week for the required culture.
-        
+
         The other thing we're doing is ensuring the correct number of week numbers per month. Most of the time,
         this is five columns. However, if the first day of the month appears in the last day of the week position 
         and there are 30 or 31 days in the month, then there are 6 columns. If it appears in the next to last 
@@ -615,6 +616,11 @@ function Get-WeekRow {
 
         The only other combination is when there are 28 days in February, and the first day is position 1 (Index = 1).
         In this case, there are only 4 columns.
+
+        All cultures are fine, but calendars (typically the Asian Lunar calendars) don't so correct week numbers.
+        This is because non-default calendars are inheriting DateTimeFormat from some Culture (which typically
+        uses Gregorian by default). DateTimeFormat is used to calculate the week number of the first week in the
+        month. I these situations, don't allow week row being displayed.
     #>
     [CmdletBinding()]
     param (
@@ -1330,11 +1336,11 @@ function Get-Calendar {
     .PARAMETER Before
         The specified number of months are added before the specified month(s). See -After for examples.
     .PARAMETER After
-        The specified number of months are added after the specified month(s). This is in addition to any date range 
-        selected by the -Year or -Three options. Negative numbers are allowed, in which case the specified number 
+        The specified number of months are added after the specified month(s). This is in addition to any date range
+        selected by the -Year or -Three options. Negative numbers are allowed, in which case the specified number
         of months is subtracted. For example ncal -after 11 simply shows the next 12 months in any culture.
     .PARAMETER Three
-        Display the current month together with the previous and following month. This is ignored if -Year is also 
+        Display the current month together with the previous and following month. This is ignored if -Year is also
         specified without a month.
     .PARAMETER DayOfYear
         Display the day of the year (days one-based, numbered from 1st January).
@@ -1347,9 +1353,9 @@ function Get-Calendar {
     .EXAMPLE
         PS C:\> cal -m 1 -a 11 -culture fa
         
-        Displays the first month and the following 11 months (this year) for any specified culture. For example, 
-        -Year 2025 with cultures that do not use the Gregorian calendar by default will not work or produce 
-        unintended results. Some cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, Saudi 
+        Displays the first month and the following 11 months (this year) for any specified culture. For example,
+        -Year 2025 with cultures that do not use the Gregorian calendar by default will not work or produce
+        unintended results. Some cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, Saudi
         Arabian) calendars by default.
     .EXAMPLE
         PS C:\> cal -m 1f
@@ -1383,12 +1389,12 @@ function Get-Calendar {
     .EXAMPLE
         PS C:> 'Persian','Hijri','UmAlQura' | % { cal -calendar $_ -name }
 
-        Display three calendars (the current month) using the specified calendars with a banner to identify each 
+        Display three calendars (the current month) using the specified calendars with a banner to identify each
         culture/calendar. 
     .EXAMPLE
         PC C:> 'en-au','en-us','dv','mzn' | % { ncal -c $_ -Name -Week -Highlight Yellow }
 
-        Display calendars for the specified cultures. This example illustrates the different DateTimeFormat 
+        Display calendars for the specified cultures. This example illustrates the different DateTimeFormat
         information for each culture (different start days for the week).
     .EXAMPLE
         PS C:> ncal -calendar Julian -m 1 -a 11
