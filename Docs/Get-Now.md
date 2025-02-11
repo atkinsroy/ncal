@@ -19,7 +19,7 @@ Get-Now [[-Calendar] <String[]>] [-ProgressAction <ActionPreference>] [<CommonPa
 
 ## DESCRIPTION
 
-Displays today's date in any of the calendars supported ny .NET Framework. By default, today's date for every
+Displays today's date in any of the calendars supported by .NET Framework. By default, today's date for every
 supported calendar is shown. The Gregorian calendar is always shown, to compare with the specified calendar.
 
 ## EXAMPLES
@@ -93,11 +93,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-[String]
-
 ## OUTPUTS
-
-[PSCustomObject]
 
 ## NOTES
 

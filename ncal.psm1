@@ -176,8 +176,7 @@ function Get-CalRow {
         #>
         if ( ($Highlight.Today -gt 0) -and $JulianSpecified) {
             $UseDate = $Calendar.ToDateTime($Year, $Month, $Highlight.Today, 0, 0, 0, 0, $Calendar.Eras[0] )
-            $JulianDay = $Culture.Calendar.GetDayOfYear($UseDate)
-        
+            $JulianDay = $Calendar.GetDayOfYear($UseDate)
             if ($OutString -match "\b$JulianDay\b") {
                 $OutString = $OutString -replace "$JulianDay\b", "$($Highlight.DayStyle)$JulianDay$($Highlight.DayReset)"
             }
@@ -1616,10 +1615,10 @@ function Get-Calendar {
             # for highlighting today
             $Pretty = Get-Highlight $ThisCalendar $ThisMonth $ThisYear $Highlight
             if ($PSBoundParameters.ContainsKey('Calendar')) {
-                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, calendar = $($ThisCalendar.ToString().Replace('System.Globalization.', '')), era = $($ThisCalendar.Eras[0])'
+                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, calendar = $($ThisCalendar.ToString().Replace('System.Globalization.', '')), era = $($ThisCalendar.Eras[0])"
             }
             else {
-                Write-Verbose 'monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, culture = $($ThisCulture.Name)"
+                Write-Verbose "monthname = $MonthName, thismonth = $ThisMonth, thisyear = $ThisYear, dayspermonth = $DayPerMonth, monthcount = $MonthCount, culture = $($ThisCulture.Name)"
             }
 
             # User specified First day of the week, or use the default for the culture being used.

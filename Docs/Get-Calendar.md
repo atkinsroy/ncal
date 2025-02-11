@@ -37,23 +37,23 @@ one year.
 
 But in addition, the command can do a whole lot more:
 
-1. Display a calendar in any supported culture. Month and day names are displayed in the appropriate language
-for the specified culture and the appropriate calendar is used (e.g.Gregorian, Persian), along with appropriate
+1. Display a calendar in any supported culture. Month and day names are displayed in the appropriate language for
+the specified culture and the appropriate calendar is used (e.g. Gregorian, Persian), along with appropriate
 DateTimeFormat information (e.g. default first day of the week).
 2. As well as display the primary calendar (used by each culture), also display optional calendars. These are
 Hijri, Hebrew, Japanese (Solar), Korean (Solar) and Taiwanese (Solar) calendars. In addition, the non-optional
 calendars (i.e. calendars not used by any culture, but still observed for religious, scientific or traditional
-purposes). These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar calendars.
-(Note: Only the current era is supported).
+purposes). These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar calendars. (Note: Only the
+current era is supported).
 3. Specify the first day of the week (Friday through Monday). The specified or current culture setting is used by
 default. Friday through Monday are supported because all cultures use one of these days.
 4. Display one to six months in a row, when multiple months are displayed (the default is 3).
 5. Highlight the year and month headings and todays date using a specified colour.
 
 It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode
-character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code, the
-ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode character
-sets, calendars may appear misaligned.
+character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code,
+the ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode
+character sets, calendars may appear misaligned.
 
 ## EXAMPLES
 
@@ -72,8 +72,8 @@ cal -m 1 -a 11 -culture fa
 ```
 
 Displays the first month and the following 11 months (this year) for any specified culture. For example, -Year 2025
-with cultures that do not use the Gregorian calendar by default will not work or produce unintended results. Some
-cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, Saudi Arabian) calendars by default.
+with cultures that do not use the Gregorian calendar by default will not work or produce unintended results.
+Some cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, Saudi Arabian) calendars by default.
 
 ### EXAMPLE 3
 
@@ -110,7 +110,7 @@ Show the day number, starting from 1st January, for this month as well as last m
 ### EXAMPLE 7
 
 ```PowerShell
-cal 2 2026 -Three
+cal 2 2026 -three
 ```
 
 Show February 2026 with the month prior and month after.
@@ -122,7 +122,7 @@ cal -Year 2025 -Highlight Cyan
 ```
 
 Shows the specified year with a highlighted colour. Supports red, blue, green, yellow, orange, pink, cyan, magenta
-and white. Disable all highlighting with -Highlight 'none'.
+and white. Disable all highlighting with - Highlight 'none'.
 
 ### EXAMPLE 9
 
@@ -135,11 +135,11 @@ Display a calender using the  Japanese (Japan) culture for the specified year.
 ### EXAMPLE 10
 
 ```PowerShell
-'Persian','Hijri','UmAlQura' | % { cal -calendar $_ -Name }
+'Persian','Hijri','UmAlQura' | % { cal -calendar $_ -name }
 ```
 
-Display three calendars (the current month) using the specified calendars with a banner to identify each culture
-and/or calendar.
+Display three calendars (the current month) using the specified calendars with a banner to identify each
+culture/calendar.
 
 ### EXAMPLE 11
 
@@ -156,11 +156,9 @@ for each culture (different start days for the week).
 ncal -calendar Julian -m 1 -a 11
 ```
 
-Shows this year months in the Julian calendar.
-
-Note: This actually works correctly, unlike the Linux ncal command (as at Feb 2025), which sometimes shows the
-wrong month (it shows this Julian month but in terms of month number on the Gregorian calendar), depending on the
-day of the month.
+Shows this year in the Julian calendar. Note: This actually works correctly, unlike the Linux ncal command (as at
+Feb 2025), which sometimes shows the wrong month (shows this Julian month but in terms of month number on the
+Gregorian calendar), depending on the day of the month.
 
 ### EXAMPLE 13
 
@@ -168,7 +166,7 @@ day of the month.
 ncal -cal Hijri -m 1 -a 11
 ```
 
-Shows this year in the Hijri (Islamic or Muslim) calendar.
+Shows this year in the Hijri (Muslim) calendar.
 
 Note: This is not supported with Linux ncal command.
 
@@ -258,12 +256,12 @@ Accept wildcard characters: False
 
 ### -MonthPerRow
 
-Display the specified number of months in each row. By default it is 4 months.
+Display the specified number of months in each row. By default it is 3 months.
 
 ```yaml
 Type: Int32
 Parameter Sets: (All)
-Aliases:
+Aliases: r, row
 
 Required: False
 Position: 5
@@ -274,7 +272,8 @@ Accept wildcard characters: False
 
 ### -Highlight
 
-By default, today's date is highlighted. Specify a colour or disable the default highlight with 'none'.
+By default, today's date is highlighted. Specify a colour to highlight today, the year/month headings and week
+numbers or disable the default highlight with 'none'.
 
 ```yaml
 Type: String
@@ -307,9 +306,8 @@ Accept wildcard characters: False
 ### -After
 
 The specified number of months are added after the specified month(s). This is in addition to any date range
-selected by the -Year or -Three options. For example, ncal -y 2021 -B 2 -A 2 will show from November 2020 to
-February 2022. Negative numbers are allowed, in which case the specified number of months is subtracted. For
-example, ncal -Y 2021 -B -6 shows July to December. Another example, ncal -A 11 simply shows the next 12 months.
+selected by the -Year or -Three options. Negative numbers are allowed, in which case the specified number of months
+is subtracted. For example ncal -after 11 simply shows the next 12 months in any culture.
 
 ```yaml
 Type: Int32
@@ -325,8 +323,8 @@ Accept wildcard characters: False
 
 ### -Three
 
-Display the current month together with the previous and following month. If -Year is also specified, this
-supercedes it.
+Display the current month together with the previous and following month. This is ignored if -Year is also
+specified without a month.
 
 ```yaml
 Type: SwitchParameter
