@@ -125,9 +125,9 @@ Show February 2026 with the month prior and month after.
 ncal -Year 2025 -Week -H Cyan
 ```
 
-Shows the specified year with a highlighted colour. Supports red, blue, green, yellow, orange, cyan, magenta and
-white. Disable all highlighting with -Highlight 'none'. Week numbers are shown below each week column and are also
-highlighted.
+Shows the specified year with a highlighted colour. Supports red, blue, green, yellow, orange, cyan, pink, magenta
+and white. Disable all highlighting with -Highlight 'none'. Week numbers are shown below each week column and are
+also highlighted.
 
 ### EXAMPLE 9
 
@@ -163,9 +163,9 @@ ncal -calendar Julian -m 1 -a 11
 
 Shows this year in the Julian calendar.
 
-Note: This actually works corectly, unlike the Linux ncal command (as at Feb 2025), which sometimes shows the wrong
-month (shows this Julian month but in terms of month number on the Gregorian calendar), depending on the day of
-the month.
+Note: This actually works correctly, unlike the Linux ncal command (as at Feb 2025), which sometimes shows the
+wrong month (shows this Julian month but in terms of month number on the Gregorian calendar), depending on the day
+of the month.
 
 ### EXAMPLE 13
 

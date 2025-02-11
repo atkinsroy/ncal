@@ -121,8 +121,8 @@ Show February 2026 with the month prior and month after.
 cal -Year 2025 -Highlight Cyan
 ```
 
-Shows the specified year with a highlighted colour. Supports red, blue, green, yellow, orange, cyan, magenta and
-white. Disable all highlighting with -Highlight 'none'.
+Shows the specified year with a highlighted colour. Supports red, blue, green, yellow, orange, pink, cyan, magenta
+and white. Disable all highlighting with -Highlight 'none'.
 
 ### EXAMPLE 9
 
@@ -168,7 +168,7 @@ day of the month.
 ncal -cal Hijri -m 1 -a 11
 ```
 
-Shows this year in the Hijri (Muslim) calendar.
+Shows this year in the Hijri (Islamic or Muslim) calendar.
 
 Note: This is not supported with Linux ncal command.
 
