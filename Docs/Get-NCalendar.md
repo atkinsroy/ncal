@@ -269,7 +269,7 @@ Display the specified number of months in each row. By default it is 4 months.
 ```yaml
 Type: Int32
 Parameter Sets: (All)
-Aliases:
+Aliases: r, row
 
 Required: False
 Position: 5
