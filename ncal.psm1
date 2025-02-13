@@ -310,8 +310,8 @@ function Get-FirstDayOfMonth {
                 $YearSpecified = $false
             }
 
-            # not going to allow 13 is be specified just for the Asian Lunar calendars as it introduces lots of
-            # additional error checking. For now, 13th month can be shown with -three or -year.
+            # allowing 13 to be specified for Asian Lunar calendars. Obviously you get an error for all other
+            # calendars.
             if ($Month -in 1..13) {
                 [Int]$MonthNumber = $Month
             }
@@ -845,7 +845,7 @@ function Get-NCalendar {
     .PARAMETER Before
         The specified number of months are added before the specified month(s). See -After for examples.
     .PARAMETER After
-        The specified number of months are added after the specified month(s). This is in addition to any date range 
+        The specified number of months are added after the specified month(s), i.e. in addition to any date range 
         selected by the -Year or -Three options. Negative numbers are allowed, in which case the specified number 
         of months is subtracted. For example ncal -after 11 simply shows the next 12 months in any culture.
     .PARAMETER Three

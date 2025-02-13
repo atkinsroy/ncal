@@ -2,7 +2,7 @@
 
 ## ncal
 
-This command displays calendar information similar to the Linux cal command. It implements the same functionality,
+This command displays calendar information similar to the Linux ncal command. It implements the same functionality,
 including the ability to display multiple months, years, day of the year and month forward and month previous by
 one year.
 
@@ -85,8 +85,8 @@ Example | Notes
 ![Month and year](/Images/2025-02-01-02.png) | The required month and year can be specified with or without -m and -y respectively. By default the local culture is used. Changing the culture affects the language (day and month names), the calendar used and the default first day of the month. The first day of the week can be changed from the cultural default using -FirstDayOfWeek (supports Friday through Monday).
 ![Specify a culture](/Images/2025-02-01-03.png) | Specify the required culture and use full length day names with -LongDayNames.
 ![Use f and p for forward and previous](/Images/2025-02-01-04.png) | Use 'f' or 'p' suffix after the required month to show forward and previous by 1 year, respectively.
-![Specify -Three](/Images/2025-02-01-05.png) |  Specify -Three to display a target month with the month prior and month after. By default, this month is the target month, but this can be changed using -Month and -Year. -Three takes priority over -Year (i.e. with the number of months to display).
-![Specify -Year without month](/Images/2025-02-01-06.png) | Specifying a year without a month to show the entire year. Ignored if -Month or -Three is also specified. Can be used with -Before and -After to show a number of months before and after the year being displayed. Use -Highlight to display month headings and today in another colour. Supported colours are red, yellow, blue, green, magenta, cyan, white, orange and pink. 'None' can also be specified to remove the default 'today' highlight.
+![Specify -three](/Images/2025-02-01-05.png) |  Specify -three to display a target month with the month prior and month after. By default, this month is the target month, but this can be changed using -Month and -Year. -Three is ignored if a year with no month is specified.
+![Specify -Year without month](/Images/2025-02-01-06.png) | Specifying a year without a month to show the entire year. Can be used with -Before and -After to show a number of months before and after the year being displayed. Use -Highlight to display month headings and today in another colour. Supported colours are red, yellow, blue, green, magenta, cyan, white, orange and pink. 'None' can also be specified to remove the default 'today' highlight.
 ![Specify -DayOfYear](/Images/2025-02-01-07.png) | Specify -DayOfYear to show days one-based, numbered from 1st January. This can be used with -month, -year, -three, -before and -after.
 ![Specify -MonthPerRow](/Images/2025-02-01-08.png) | By default, ncal shows up to 4 months in a row. This can be changed from 1 to 6. (For cal, the default months per row is 3.). This example shows -After and also -Week to show the week number of the year below. Highlighting affects the year/month heading, week numbers and todays date.
 ![UmAlQura](/Images/2025-02-01-09.png) | Example of showing this month (with 3 months following) in a different calendar. This example shows Saudi Arabian culture, which uses the UmAlQura calendar. Persian (e.g. fa, mzn) and ThaiBuddist (i.e th) calendars are also used by some cultures. Use Get-Culture -ListAvailable to see the cultures available on your system.
