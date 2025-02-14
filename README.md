@@ -22,9 +22,9 @@ default. Friday through Monday are supported because all cultures use one of the
 5. Highlight the year and month headings, week numbers and todays date using a specified colour.
 
 It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode
-character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code, the
-ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode character
-sets, calendars may appear misaligned.
+character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code and the
+default PowerShell console, some fonts might not display correctly and with extended unicode character sets,
+calendars may appear misaligned.
 
 Use the following command to see the available cultures on your system and pass a culture name to ncal with the
 -Culture parameter.
