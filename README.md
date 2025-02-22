@@ -26,6 +26,10 @@ character sets are both available and are displayed correctly. With other consol
 default PowerShell console, some fonts might not display correctly and with extended unicode character sets,
 calendars may appear misaligned.
 
+**Note:** Some versions of Windows Terminal have been found to misalign unicode character sets. For example, version 
+1.21.2911.0 (Nov 2024) works well, whilst version 1.22.10352.0 (Feb 2025) has reintroduced unicode character 
+misalignment.
+
 Use the following command to see the available cultures on your system and pass a culture name to ncal with the
 -Culture parameter.
 
