@@ -826,9 +826,13 @@ function Get-NCalendar {
         the ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode
         character sets, calendars may appear misaligned.
 
-        Note: Some versions of Windows Terminal have been found to misalign unicode character sets. For example, 
-        version 1.21.2911.0 (Nov 2024) works well, whilst version 1.22.10352.0 (Feb 2025) has reintroduced unicode 
-        character misalignment.
+        Note: From version 1.22.10352.0 (Feb 2025) of Windows Terminal, grapheme clusters are now supported and are 
+        turned on by default. A grapheme cluster is a single user-perceived character made up of multiple code code 
+        points from the Unicode Standard, introduced in .NET 5. Whilst this is considered the correct method for 
+        handling and displaying Unicode character sets, PowerShell doesn't support grapheme clusters and thus, 
+        calandars in ncal appear misaligned. This can be remedied, in the short term, by disabling grapheme cluster 
+        support in Settings > Compatibility > Text measurement mode, selecting "Windows Console" and then 
+        restarting the Windows Terminal.
     .PARAMETER Month
         Specifies the required month. This must be specified as a number 0..13. An 'f' (forward by one year) or a
         'p' (previous by one year) suffix can also be appended to the month number.
@@ -1320,9 +1324,13 @@ function Get-Calendar {
         the ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode
         character sets, calendars may appear misaligned.
 
-        Note: Some versions of Windows Terminal have been found to misalign unicode character sets. For example, 
-        version 1.21.2911.0 (Nov 2024) works well, whilst version 1.22.10352.0 (Feb 2025) has reintroduced unicode 
-        character misalignment.
+        Note: From version 1.22.10352.0 (Feb 2025) of Windows Terminal, grapheme clusters are now supported and are 
+        turned on by default. A grapheme cluster is a single user-perceived character made up of multiple code code 
+        points from the Unicode Standard, introduced in .NET 5. Whilst this is considered the correct method for 
+        handling and displaying Unicode character sets, PowerShell doesn't support grapheme clusters and thus, 
+        calandars in ncal appear misaligned. This can be remedied, in the short term, by disabling grapheme cluster 
+        support in Settings > Compatibility > Text measurement mode, selecting "Windows Console" and then 
+        restarting the Windows Terminal.
     .PARAMETER Month
         Specifies the required month. This must be specified as a number 0..13. An 'f' (forward by one year) or a
         'p'  (previous year) suffix can also be appended to the month number.

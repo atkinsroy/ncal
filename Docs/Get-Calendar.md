@@ -31,20 +31,20 @@ Get-Calendar [[-Month] <String>] [[-Year] <Int32>] [[-Calendar] <String>] [[-Fir
 
 ## DESCRIPTION
 
-This command displays calendar information similar to the Linux cal command. It implements the same functionality,
+This command displays calendar information similar to the Linux cal command.It implements the same functionality,
 including the ability to display multiple months, years, day of the year and month forward and month previous by
 one year.
 
 But in addition, the command can do a whole lot more:
 
-1. Display a calendar in any supported culture. Month and day names are displayed in the appropriate language for
+1. Display a calendar in any supported culture.Month and day names are displayed in the appropriate language for
 the specified culture and the appropriate calendar is used (e.g. Gregorian, Persian), along with appropriate
 DateTimeFormat information (e.g. default first day of the week).
 2. As well as display the primary calendar (used by each culture), also display optional calendars. These are
 Hijri, Hebrew, Japanese (Solar), Korean (Solar) and Taiwanese (Solar) calendars. In addition, the non-optional
-calendars (i.e. calendars not used by any culture, but still observed for religious, scientific or traditional
-purposes). These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar calendars. (Note: Only the
-current era is supported).
+calendars.
+These are the Julian and Chinese, Japanese, Korean and Taiwanese Lunar calendars. (Note: Only the current era is
+supported).
 3. Specify the first day of the week (Friday through Monday). The specified or current culture setting is used by
 default. Friday through Monday are supported because all cultures use one of these days.
 4. Display one to six months in a row, when multiple months are displayed (the default is 3).
@@ -54,6 +54,13 @@ It is highly recommended that Windows Terminal is used with an appropriate font 
 character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code,
 the ISE and the default PowerShell console, some fonts might not display correctly and with extended unicode
 character sets, calendars may appear misaligned.
+
+Note: From version 1.22.10352.0 (Feb 2025) of Windows Terminal, grapheme clusters are now supported and are turned
+on by default. A grapheme cluster is a single user-perceived character made up of multiple code code points from
+the Unicode Standard, introduced in .NET 5. Whilst this is considered the correct method for handling and
+displaying Unicode character sets, PowerShell doesn't support grapheme clusters and thus, calandars in ncal appear
+misaligned. This can be remedied, in the short term, by disabling grapheme cluster support in Settings \>
+Compatibility \> Text measurement mode, selecting "Windows Console" and then restarting the Windows Terminal.
 
 ## EXAMPLES
 
@@ -81,7 +88,8 @@ Some cultures use the Persian (Iranian), ThaiBuddist and UmAlQura (Umm al-Qura, 
 cal -m 1f
 ```
 
-Displays January next year. -m 4p shows April from the previous year
+Displays January next year.
+-m 4p shows April from the previous year
 
 ### EXAMPLE 4
 
@@ -147,8 +155,8 @@ culture/calendar.
 'en-au','en-us','dv','mzn' | % { ncal -c $_ -Name -Week -Highlight Yellow }
 ```
 
-Display calendars for the specified cultures. This example illustrates the different DateTimeFormat information
-for each culture (different start days for the week).
+Display calendars for the specified cultures. This example illustrates the different DateTimeFormat information for
+each culture (different start days for the week).
 
 ### EXAMPLE 12
 
@@ -156,9 +164,11 @@ for each culture (different start days for the week).
 ncal -calendar Julian -m 1 -a 11
 ```
 
-Shows this year in the Julian calendar. Note: This actually works correctly, unlike the Linux ncal command (as at
-Feb 2025), which sometimes shows the wrong month (shows this Julian month but in terms of month number on the
-Gregorian calendar), depending on the day of the month.
+Shows this year in the Julian calendar.
+
+Note: This actually works correctly, unlike the Linux ncal command (as at Feb 2025), which sometimes shows
+the wrong month (shows this Julian month but in terms of month number on the Gregorian calendar),
+depending on the day of the month.
 
 ### EXAMPLE 13
 
