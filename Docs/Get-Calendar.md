@@ -56,10 +56,10 @@ the ISE and the default PowerShell console, some fonts might not display correct
 character sets, calendars may appear misaligned.
 
 Note: From version 1.22.10352.0 (Feb 2025) of Windows Terminal, grapheme clusters are now supported and are turned
-on by default. A grapheme cluster is a single user-perceived character made up of multiple code code points from
-the Unicode Standard, introduced in .NET 5. Whilst this is considered the correct method for handling and
-displaying Unicode character sets, PowerShell doesn't support grapheme clusters and thus, calandars in ncal appear
-misaligned. This can be remedied, in the short term, by disabling grapheme cluster support in Settings \>
+on by default. A grapheme cluster is a single user-perceived character made up of multiple code points from the
+Unicode Standard, introduced in .NET 5. Whilst this is considered the correct method for handling and displaying
+Unicode character sets, PowerShell doesn't support grapheme clusters and thus, calandars in ncal appear misaligned.
+This can be remedied, in the short term, by disabling grapheme cluster support in Settings \>
 Compatibility \> Text measurement mode, selecting "Windows Console" and then restarting the Windows Terminal.
 
 ## EXAMPLES
