@@ -21,9 +21,9 @@ default. Friday through Monday are supported because all cultures use one of the
 4. Display one to six months in a row, when multiple months are displayed (the default is 4).
 5. Highlight the year and month headings, week numbers and todays date using a specified colour.
 
-It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO unicode
+It is highly recommended that Windows Terminal is used with an appropriate font to ensure that ISO Unicode
 character sets are both available and are displayed correctly. With other consoles, like Visual Studio Code and the
-default PowerShell console, some fonts might not display correctly and with extended unicode character sets,
+default PowerShell console, some fonts might not display correctly and with extended Unicode character sets,
 calendars may appear misaligned.
 
 **Note:** From version 1.22.10352.0 (Feb 2025) of Windows Terminal, grapheme clusters are now supported and are
@@ -53,7 +53,7 @@ supported calendar is shown. The Gregorian calendar is always shown, to compare 
 ## Globalization
 
 **ncal** and **cal** have been tested with over 800 cultures and work well providing that Windows Terminal is used
-together with a font that supports unicode character sets. (I have been using the Lilex Nerd Font during the
+together with a font that supports Unicode character sets. (I have been using the Lilex Nerd Font during the
 development of ncal). In addition, calendars not primarily used by a culture are supported. These include the
 Julian, Hijra (Islamic or Muslim calendar), Chinese lunar, Hebrew and several other calendars which are observed
 in many parts of the world for religious or scientific purposes. Note that the Julian calendar uses an ISO 1806
@@ -63,12 +63,12 @@ month can be specified as the required month, but read later for problems suppor
 ## Known Problems
 
 1. All culture based calendars display well, except for cultures using the Chakma language (ccp, ccp-BD and
-ccp-IN) which is misaligned because of varying lengths in the unicode characters. Log an issue if this affects you.
+ccp-IN) which is misaligned because of varying lengths in the Unicode characters. Log an issue if this affects you.
 2. Some languages have really long month and day names. Rather than attempting to shorten these, they have been
 left culturally correct. Again, if this is affecting you and you can help with the specifics, I'd be prepared to
-look at this. For cultures that use extended unicode character sets, I will not attempt to shorten names. In mean
-time, you can set -MonthInRow (or -r) to 1.
-3. The non-default calendars have no DateTimeFormat properties of their own. So the culture that makes the most
+look at this. For cultures that use extended Unicode character sets, I will not attempt to shorten names. In the
+mean time, you can set -MonthInRow (or -r) to 1.
+4. The non-default calendars have no DateTimeFormat properties of their own. So the culture that makes the most
 sense is used. For some calendars, this is partially ok; for example the ar-SA (Saudi Arabia) culture uses the same
 month names as the Hijri (Islamic or Muslim) calendar. But for other calendars, like Hebrew, they use different
 month names from the closest culture (in this case, the he-IL (Israel) culture uses the Gregorian calendar and has
@@ -76,7 +76,7 @@ different month names in Hebrew to the Hebrew calendar). I suspect this is true 
 affects week numbers and is especially noticeable with the Asian lunar calendars in years that have 13 months. The
 Julian, Hijri and Hebrew calendars are also affected. In these cases, displaying week numbers is not supported.
 The Asian solar calendars are ok.
-4. Some lunar calendars have 13 months in some years. The thirteenth month displays ok when a year is specified,
+5. Some lunar calendars have 13 months in some years. The thirteenth month displays ok when a year is specified,
 but for the same reason as above, this month has no month name; the DateTimeFormat for the closest culture uses
 Gregorian which has twelve months only. In these situations, the month name will be shown as '13'. In summary,
 I don't think .NET Framework supports the none default calendars, with respect to DateTimeFormat, very well.
