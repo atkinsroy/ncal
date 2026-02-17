@@ -842,6 +842,7 @@ function Get-ZodiacAnimal {
         }
     }
 }
+
 function Get-NCalendar {
     <#
     .SYNOPSIS
