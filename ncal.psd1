@@ -12,13 +12,13 @@
 RootModule = '.\ncal.psm1'
 
 # Version number of this module.
-ModuleVersion = '3.1.7'
+ModuleVersion = '3.1.8'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
 
 # ID used to uniquely identify this module
-GUID = '95647849-b377-426d-b790-b9d653c2c12d'
+GUID = '7c3f3510-17a1-4b47-ae0f-215b0b5e7b8f'
 
 # Author of this module
 Author = 'Roy Atkins'
