@@ -68,7 +68,7 @@ ccp-IN) which is misaligned because of varying lengths in the Unicode characters
 left culturally correct. Again, if this is affecting you and you can help with the specifics, I'd be prepared to
 look at this. For cultures that use extended Unicode character sets, I will not attempt to shorten names. In the
 mean time, you can set -MonthInRow (or -r) to 1.
-4. The non-default calendars have no DateTimeFormat properties of their own. So the culture that makes the most
+3. The non-default calendars have no DateTimeFormat properties of their own. So the culture that makes the most
 sense is used. For some calendars, this is partially ok; for example the ar-SA (Saudi Arabia) culture uses the same
 month names as the Hijri (Islamic or Muslim) calendar. But for other calendars, like Hebrew, they use different
 month names from the closest culture (in this case, the he-IL (Israel) culture uses the Gregorian calendar and has
@@ -76,7 +76,7 @@ different month names in Hebrew to the Hebrew calendar). I suspect this is true 
 affects week numbers and is especially noticeable with the Asian lunar calendars in years that have 13 months. The
 Julian, Hijri and Hebrew calendars are also affected. In these cases, displaying week numbers is not supported.
 The Asian solar calendars are ok.
-5. Some lunar calendars have 13 months in some years. The thirteenth month displays ok when a year is specified,
+4. Some lunar calendars have 13 months in some years. The thirteenth month displays ok when a year is specified,
 but for the same reason as above, this month has no month name; the DateTimeFormat for the closest culture uses
 Gregorian which has twelve months only. In these situations, the month name will be shown as '13'. In summary,
 I don't think .NET Framework supports the none default calendars, with respect to DateTimeFormat, very well.
@@ -92,9 +92,10 @@ Example | Notes
 ![Month and year](/Docs/Images/2025-02-01-02.png) | The required month and year can be specified with or without -m and -y respectively. By default the local culture is used. Changing the culture affects the language (day and month names), the calendar used and the default first day of the month. The first day of the week can be changed from the cultural default using -FirstDayOfWeek (supports Friday through Monday).
 ![Specify a culture](/Docs/Images/2025-02-01-03.png) | Specify the required culture and use full length day names with -LongDayNames.
 ![Use f and p for forward and previous](/Docs/Images/2025-02-01-04.png) | Use 'f' or 'p' suffix after the required month to show forward and previous by 1 year, respectively.
-![Specify -three](/Docs/Images/2025-02-01-05.png) |  Specify -three to display a target month with the month prior and month after. By default, this month is the target month, but this can be changed using -Month and -Year. -Three is ignored if a year with no month is specified.
+![Specify -three](/Docs/Images/2025-02-01-05.png) | Specify -three to display a target month with the month prior and month after. By default, this month is the target month, but this can be changed using -Month and -Year. -Three is ignored if a year with no month is specified.
 ![Specify -Year without month](/Docs/Images/2025-02-01-06.png) | Specifying a year without a month to show the entire year. Can be used with -Before and -After to show a number of months before and after the year being displayed. Use -Highlight to display month headings and today in another colour. Supported colours are red, yellow, blue, green, magenta, cyan, white, orange and pink. 'None' can also be specified to remove the default 'today' highlight.
 ![Specify -DayOfYear](/Docs/Images/2025-02-01-07.png) | Specify -DayOfYear to show days one-based, numbered from 1st January. This can be used with -month, -year, -three, -before and -after.
 ![Specify -MonthPerRow](/Docs/Images/2025-02-01-08.png) | By default, ncal shows up to 4 months in a row. This can be changed from 1 to 6. (For cal, the default months per row is 3.). This example shows -After and also -Week to show the week number of the year below. Highlighting affects the year/month heading, week numbers and todays date.
 ![UmAlQura](/Docs/Images/2025-02-01-09.png) | Example of showing this month (with 3 months following) in a different calendar. This example shows Saudi Arabian culture, which uses the UmAlQura calendar. Persian (e.g. fa, mzn) and ThaiBuddist (i.e th) calendars are also used by some cultures. Use Get-Culture -ListAvailable to see the cultures available on your system.
 ![Japanese](/Docs/Images/2025-02-11-01.png) | Example output from cal. Display a year in the Japanese culture (Gregorian calendar) with 4 months in a row and highlights in pink.
+![Chinese New Year](/Docs/Images/2026-02-17-01.png) | Example output from cal. Display a year in Chinese Lunisolar calendar. If Year is specified with this calendar the Zodiac Animal is also shown at the bottom of the year.
