@@ -795,6 +795,26 @@ function Get-Highlight {
     }
 }
 
+function Get-ZodiacAnimal {
+    [CmdletBinding()]
+    <#
+        .NOTES
+        Helper function for Get-NCalendar and Get-Calendar. Returns the zodiac animal for the specified year, 
+        based on the Chinese calendar.
+    #>
+    param (
+        [Parameter(Position = 0)]
+        [int]$Year
+    )
+
+    process {
+        Write-Verbose $Year
+        $ZodiacAnimal = @('Rat', 'Ox', 'Tiger', 'Rabbit', 'Dragon', 'Snake', 'Horse', 'Goat', 'Monkey', 'Rooster', 'Dog', 'Pig')
+        $AnimalIndex = ($Year - 4) % 12
+        Write-Output $ZodiacAnimal[$AnimalIndex]
+    }
+}
+
 function Get-NCalendar {
     <#
     .SYNOPSIS
@@ -1293,6 +1313,13 @@ function Get-NCalendar {
                 Write-Output "$($Pretty.MonStyle)$WeekRow$($Pretty.MonReset)"
             }
         }
+
+        # If a year is specified with the Chinese lunisolar calendar, also display the Chinese Zodiac Animal.
+        write-verbose "$Year, $Calendar"
+        if ($PSBoundParameters.ContainsKey('Year') -and $Calendar -eq 'ChineseLunisolar') {
+            $ZodiacAnimal = Get-ZodiacAnimal -Year $Year
+            Write-Output "`n$($Pretty.MonStyle)This is the year of the $ZodiacAnimal.$($Pretty.MonReset)"
+        }
     }
 }
 
@@ -1681,7 +1708,7 @@ function Get-Calendar {
                 }
                 Write-Output "$($Pretty.MonStyle)$MonthHeading$($Pretty.MonReset)"
                 Write-Output $MonthRow
-                Write-Output ''
+                #Write-Output ''
 
                 # Reset for next row of months
                 $MonthRow = New-Object -TypeName System.String[] -ArgumentList 7
@@ -1723,6 +1750,13 @@ function Get-Calendar {
             }
             Write-Output "$($Pretty.MonStyle)$MonthHeading$($Pretty.MonReset)"
             Write-Output $MonthRow
+        }
+
+        # If a year is specified with the Chinese lunisolar calendar, also display the Chinese Zodiac Animal.
+        write-verbose "$Year, $Calendar"
+        if ($PSBoundParameters.ContainsKey('Year') -and $Calendar -eq 'ChineseLunisolar') {
+            $ZodiacAnimal = Get-ZodiacAnimal -Year $Year
+            Write-Output "$($Pretty.MonStyle)This is the year of the $ZodiacAnimal$.($Pretty.MonReset)"
         }
     }
 }
