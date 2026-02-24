@@ -76,11 +76,10 @@ different month names in Hebrew to the Hebrew calendar). I suspect this is true 
 affects week numbers and is especially noticeable with the Asian lunar calendars in years that have 13 months. The
 Julian, Hijri and Hebrew calendars are also affected. In these cases, displaying week numbers is not supported.
 The Asian solar calendars are ok.
-4. Some lunar calendars have 13 months in some years. The thirteenth month displays ok when a year is specified,
-but for the same reason as above, this month has no month name; the DateTimeFormat for the closest culture uses
-Gregorian which has twelve months only. In these situations, the month name will be shown as '13'. In summary,
-I don't think .NET Framework supports the none default calendars, with respect to DateTimeFormat, very well.
-(Unless I am missing something).
+
+## Release Notes
+
+Refer to the [release notes](/RELEASENOTES.md) for more details.
 
 ## Usage
 
