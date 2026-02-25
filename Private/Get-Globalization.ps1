@@ -26,19 +26,18 @@ function Get-Globalization {
         if ($null -ne $Culture -and '' -ne $Culture) {
             try {
                 $ThisCulture = New-Object System.Globalization.CultureInfo($Culture) -ErrorAction Stop
-                # The above doesn't always capture a dodgy culture so test further
+                # The above doesn't always capture unsupported culture so test further
                 $AllCulture = (Get-Culture -ListAvailable).Name
                 if ($Culture -notin $AllCulture) {
-                    Write-Warning "Invalid culture: '$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
+                    Write-Warning "Invalid culture specified: '$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
                     $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
                 } 
             }
             catch {
-                Write-Warning "Invalid culture specified:'$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
+                Write-Warning "Invalid culture specified: '$Culture'. Using the system default culture ($((Get-Culture).Name)). Use 'Get-Culture -ListAvailable'."
                 $ThisCulture = [System.Globalization.CultureInfo]::CurrentCulture
             }
             $ThisCalendar = $ThisCulture.Calendar
-
         }
         elseif ($null -ne $Calendar -and '' -ne $Calendar) {
             $CultureLookup = @{
@@ -50,7 +49,7 @@ function Get-Globalization {
                 'Korean'            = 'ko-KR'
                 'Taiwan'            = 'zh-Hant-TW'
                 'UmAlQura'          = 'ar-SA'
-                'ThaiBuddhist'      = 'th-th'
+                'ThaiBuddhist'      = 'th-TH'
                 'Julian'            = 'en-AU'
                 'ChineseLunisolar'  = 'zh'
                 'JapaneseLunisolar' = 'ja'
@@ -59,7 +58,7 @@ function Get-Globalization {
             }
             <#
                 In order to support Julian and Asian Lunar calendars ('non-optional'), treat culture and calendar
-                separately. With optional calenders you can set the culture to use them, but this doesn't work for
+                separately. With optional calendars you can set the culture to use them, but this doesn't work for
                 the above.
             #>
             $ThisCulture = New-Object System.Globalization.CultureInfo($($CultureLookup[$Calendar]))

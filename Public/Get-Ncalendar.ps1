@@ -112,7 +112,7 @@ function Get-NCalendar {
     .EXAMPLE
         PS C:> ncal -culture ja-JP -Year 2025 -Highlight Orange
 
-        Display a calender using the  Japanese (Japan) culture for the specified year.
+        Display a calendar using the  Japanese (Japan) culture for the specified year.
     .EXAMPLE
         PS C:> 'Persian','Hijri','UmAlQura' | % { ncal -calendar $_ -name }
 
@@ -266,7 +266,7 @@ function Get-NCalendar {
             Write-Error $PSItem.Exception.Message -ErrorAction Stop
         }
 
-        # To hold each row of 1 to 6 months, initialized with culture specific day abbreviation
+        # To hold each row of 1 to 6 months, initialize with culture specific day name/abbreviation
         [System.Collections.Generic.List[String]]$MonthRow = $WeekDay.Name
         $MonthCount = 0
         $MonthHeading = ' ' * $WeekDay.Offset
@@ -283,7 +283,7 @@ function Get-NCalendar {
             $YearSpecified = $RequiredMonth.YearSpecified
             $MonthName = $MonthNameArray[$ThisMonth - 1]  # MonthNameArray is zero based
             if (13 -eq $ThisMonth) {
-                $MonthName = switch ($Calendar) {  
+                $MonthName = switch ($Calendar) {
                     'JapaneseLunisolar' { '閏月'; break }
                     'KoreanLunisolar' { '윤달'; break }
                     default { '闰月' } # Chinese and Taiwan Lunar calendars

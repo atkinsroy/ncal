@@ -18,7 +18,7 @@ function Get-WeekRow {
         All cultures are fine, but calendars (typically the Asian Lunar calendars) don't show correct week numbers.
         This is because non-default calendars are inheriting DateTimeFormat from some Culture (which typically
         uses Gregorian by default). DateTimeFormat is used to calculate the week number of the first week in the
-        month. I these situations, don't allow week row being displayed.
+        month. In these situations, don't allow week row being displayed.
 
         The GetWeekOf year method is used on the calendar object below. This is "flexible" in nature, designed to
         work with various cultures. So, in practice, this method doesn't always following the ISO 8601 standard.
@@ -27,7 +27,7 @@ function Get-WeekRow {
         $week = [System.Globalization.ISOWeek]::GetWeekOfYear($Date)
 
         However, this method doesn't accommodate the variable FirstDayOfWeek parameter, so some weeks would appear
-        missaligned. In addition, it only works for Gregorian calendar.
+        misaligned. In addition, it only works for Gregorian calendar.
 
         https://www.epochconverter.com/Weeks/2026
 

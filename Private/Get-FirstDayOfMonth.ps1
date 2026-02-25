@@ -55,18 +55,24 @@ function Get-FirstDayOfMonth {
             elseif ($Month -match '^(0?[1-9]|1[0-3])[Ff]$') {
                 [Int]$MonthNumber = ($Month | Select-String -Pattern '^\d+').Matches.Value
                 $Year += 1
+                if ($true -eq $YearSpecified) {
+                    Write-Warning 'The Year parameter is ignored when Month is specified with an "f" suffix.'
+                }
             }
             # trailing 'p' means month specified, but last year required
             elseif ($Month -match '^(0?[1-9]|1[0-3])[Pp]$') {
                 [Int]$MonthNumber = ($Month | Select-String -Pattern '^\d+').Matches.Value
                 $Year -= 1
+                if ($true -eq $YearSpecified) {
+                    Write-Warning 'The Year parameter is ignored when Month is specified with a "p" suffix.'
+                }
             }
             else {
                 Write-Error "'$Month' is not a valid month number"
                 return
             }
             <#
-                add additional month before and after required month. This is better than Linux ncal. It allows
+                add month before and after required month. This is better than Linux ncal. It allows
                 a month in any year to be specified with -three. Linux ncal just ignores -3 and displays the 
                 specified year.
             #>

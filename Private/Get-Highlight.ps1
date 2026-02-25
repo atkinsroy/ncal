@@ -31,7 +31,7 @@ function Get-Highlight {
             $Today = 0
         }
         if (-not $Highlight) {
-            # This is the default; reverse highlight today but no highlighted month name
+            # This is the default; reverse highlight today but no highlighted month name or week row.
             Write-Output @{
                 Today    = $Today
                 MonStyle = $null
@@ -46,7 +46,7 @@ function Get-Highlight {
                 Today = 0
             }
         }
-        # Just for giggles, demonstrate some non-PSStyle supplied colours
+        # Demonstrate the use of some non-PSStyle supplied colours
         elseif ('Orange' -eq $Highlight) {
             Write-Output @{
                 Today    = $Today

@@ -5,7 +5,7 @@
 # Description:
 #     This module provides calendar functionality similar to the Linux ncal and
 #     cal commands, with additional features for displaying dates in various 
-#     calendars supported by .NET.
+#     cultures and calendars supported by .NET.
 # 
 # Website:
 #     https://github.com/atkinsroy/ncal
@@ -14,18 +14,18 @@
 #     Roy Atkins
 #
 ###############################################################################
-$publicPath = Join-Path -Path $PSScriptRoot -ChildPath 'Public'
-$privatePath = Join-Path -Path $PSScriptRoot -ChildPath 'Private'
+$PublicPath = Join-Path -Path $PSScriptRoot -ChildPath 'Public'
+$PrivatePath = Join-Path -Path $PSScriptRoot -ChildPath 'Private'
 
 $Public = @()
 $Private = @()
 
-if (Test-Path -Path $publicPath) {
-    $Public = @(Get-ChildItem -Path (Join-Path -Path $publicPath -ChildPath '*.ps1') -File)
+if (Test-Path -Path $PublicPath) {
+    $Public = @(Get-ChildItem -Path (Join-Path -Path $PublicPath -ChildPath '*.ps1') -File | Sort-Object -Property Name)
 }
 
-if (Test-Path -Path $privatePath) {
-    $Private = @(Get-ChildItem -Path (Join-Path -Path $privatePath -ChildPath '*.ps1') -File)
+if (Test-Path -Path $PrivatePath) {
+    $Private = @(Get-ChildItem -Path (Join-Path -Path $PrivatePath -ChildPath '*.ps1') -File | Sort-Object -Property Name)
 }
 
 foreach ($Module in @($Public + $Private)) {
@@ -37,26 +37,26 @@ foreach ($Module in @($Public + $Private)) {
     }
 }
 
-$aliasesToExport = @()
+$AliasesToExport = @()
 
 if (Get-Command -Name 'Get-NCalendar' -ErrorAction SilentlyContinue) {
     Set-Alias -Name 'ncal' -Value 'Get-NCalendar' -Scope Local
-    $aliasesToExport += 'ncal'
+    $AliasesToExport += 'ncal'
 }
 
 if (Get-Command -Name 'Get-Calendar' -ErrorAction SilentlyContinue) {
     Set-Alias -Name 'cal' -Value 'Get-Calendar' -Scope Local
-    $aliasesToExport += 'cal'
+    $AliasesToExport += 'cal'
 }
 
-$publicFunctionNames = @($Public.BaseName | Where-Object { $_ })
+$PublicFunctionNames = @($Public.BaseName | Where-Object { $_ })
 
-if ($publicFunctionNames.Count -gt 0 -and $aliasesToExport.Count -gt 0) {
-    Export-ModuleMember -Function $publicFunctionNames -Alias $aliasesToExport
+if ($PublicFunctionNames.Count -gt 0 -and $AliasesToExport.Count -gt 0) {
+    Export-ModuleMember -Function $PublicFunctionNames -Alias $AliasesToExport
 }
-elseif ($publicFunctionNames.Count -gt 0) {
-    Export-ModuleMember -Function $publicFunctionNames
+elseif ($PublicFunctionNames.Count -gt 0) {
+    Export-ModuleMember -Function $PublicFunctionNames
 }
-elseif ($aliasesToExport.Count -gt 0) {
-    Export-ModuleMember -Alias $aliasesToExport
+elseif ($AliasesToExport.Count -gt 0) {
+    Export-ModuleMember -Alias $AliasesToExport
 }

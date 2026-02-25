@@ -47,7 +47,7 @@ numbers are not supported with cal, but everything else works the same way.
 
 ## Get-Now
 
-Display today's date in any of the calendars supported by .NET Framework. By default, today's date for every
+Display today's date in the calendars supported by .NET Framework. By default, today's date for every
 supported calendar is shown. The Gregorian calendar is always shown, to compare with the specified calendar(s).
 
 ## Globalization

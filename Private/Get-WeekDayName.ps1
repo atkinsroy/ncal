@@ -11,7 +11,7 @@ function Get-WeekDayName {
         According to .Net, just one language (Dhivehi - cultures dv and dv-MV), spoken in the Maldives, has a week 
         day starting on Friday. Most Islamic countries (some Arabic, Persian, Pashto and one or two others) use 
         Saturday. All Western and Eastern European countries, Russia, India, most of Africa, Asian-Pacific 
-        countries, except China and Japan follow ISO 1806 standard with Monday as the first day of the week. All 
+        countries, except China and Japan follow ISO 8601 standard with Monday as the first day of the week. All 
         North and South American countries, some African, China and Japan use Sunday.
 
         With ncal, we want full day names or abbreviated day names (modified for some cultures).
@@ -40,40 +40,45 @@ function Get-WeekDayName {
     begin {
         [Int]$MonthOffset = 0
         Write-Verbose "Mode is $Mode"
+        $SingleDigitCulture = '^(ja|zh|ko$|ko\-|ii)' # less padding
+        $IgnoreWesternCulture = '^(de|en|eo|es|fr|it|pt|wo)' # two characters, rather than one for day names.
+
     }
     process {
         if ($Mode -eq 'Get-Calendar') {
             # Some cultures use double width character sets. Attempt to capture these and do not pad day names
-            if ($Culture.Name -match '^(ja|zh|ko$|ko\-|ii)') {
-                $WeekDay = $Culture.DateTimeFormat.ShortestDayNames
+            if ($Culture.Name -match $SingleDigitCulture) {
                 if ($true -eq $JulianSpecified) {
                     # For day of the year, each day is 2 characters wide with double-width character sets.
                     $WeekDay = $WeekDay | ForEach-Object { "$_".PadLeft(2, ' ') }
+                }
+                else {
+                    $WeekDay = $Culture.DateTimeFormat.ShortestDayNames
                 }
             }
             else {
                 # Truncate some Abbreviated day names to two characters (e.g. Mo, Tu), rather than Shortest day 
                 # names (e.g. M, T) for some Western and other languages.
-                if ($Culture.Name -match '^(da|de|es|eo|en|fr|it|pt|wo|fil)') {
+                if ($true -eq $JulianSpecified) {
+                    # For day of the year, each day is 3 characters wide.
+                    $WeekDay = $WeekDay | ForEach-Object { "$_".PadLeft(3, ' ') }
+                }
+                elseif ($Culture.Name -match $IgnoreWesternCulture) {
                     $WeekDay = $Culture.DateTimeFormat.AbbreviatedDayNames | ForEach-Object { "$_".Substring(0, 2) }
                 }
                 else {
                     # Most cultures use a single character, so ensure the names are 2 characters.
                     $WeekDay = $Culture.DateTimeFormat.ShortestDayNames | ForEach-Object { "$_".PadLeft(2, ' ') }
                 }
-                if ($true -eq $JulianSpecified) {
-                    # For day of the year, each day is 3 characters wide.
-                    $WeekDay = $WeekDay | ForEach-Object { "$_".PadLeft(3, ' ') }
-                }
+
             }
-            Write-Verbose "Short week day - $WeekDay"
         }
         else {
             # Get-NCalendar is the (default) calling function
             if ($true -eq $LongDayName) {
                 $WeekDayLong = $Culture.DateTimeFormat.DayNames
                 Write-Verbose "Long week day - $WeekDayLong"
-                if ($Culture.Name -match '^(ja|zh|ko$|ko\-|ii)') {
+                if ($Culture.Name -match $SingleDigitCulture) {
                     # Full day name for cultures that use double width character sets, double the size of the month 
                     # offset but not the weekday  
                     $MonthOffset = 2 + ((($WeekDayLong | ForEach-Object { "$_".Length } | Measure-Object -Maximum).Maximum) * 2)
@@ -89,13 +94,13 @@ function Get-WeekDayName {
             else {
                 $WeekDayShort = $Culture.DateTimeFormat.AbbreviatedDayNames
                 Write-Verbose "Abbreviated week day - $WeekDayShort"
-                if ($Culture.Name -match '^(ja|zh|ko$|ko\-|ii)') {
+                if ($Culture.Name -match $SingleDigitCulture) {
                     # Short day names for cultures that use double width character sets
                     $MonthOffset = 2 + ((($WeekDayShort | ForEach-Object { "$_".Length } | Measure-Object -Maximum).Maximum) * 2)
                     $WeekDayLength = ($WeekDayShort | ForEach-Object { "$_".Length } | Measure-Object -Maximum).Maximum
                     $WeekDay = $WeekDayShort | ForEach-Object { "$_".PadRight($WeekDayLength + 1, ' ') }
                 }
-                elseif ($Culture.Name -match '^(en|fr|de|it|es|pt|eo)') {
+                elseif ($Culture.Name -match $IgnoreWesternCulture) {
                     # Simulate the Linux ncal command with two character day names on some Western cultures.
                     $MonthOffset = 4
                     $WeekDay = $WeekDayShort | ForEach-Object { "$_".Substring(0, 2).PadRight(3, ' ') }

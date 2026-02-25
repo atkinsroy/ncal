@@ -103,7 +103,7 @@ function Get-Calendar {
     .EXAMPLE
         PS C:> cal -culture ja-JP -Year 2025 -Highlight Orange
 
-        Display a calender using the  Japanese (Japan) culture for the specified year.
+        Display a calendar using the  Japanese (Japan) culture for the specified year.
     .EXAMPLE
         PS C:> 'Persian','Hijri','UmAlQura' | % { cal -calendar $_ -name }
 
@@ -310,8 +310,7 @@ function Get-Calendar {
             }
             elseif ($MonthCount -lt $MonthPerRow) {
                 # Construct the calendar rows, based on the number months per row. default is 4, but can be
-                # specified with -MonthPerRow. Also construct Week row string, if -Week is specified and supported
-                # for this calendar.
+                # specified with -MonthPerRow.
                 $Param = @{
                     'Culture'         = $ThisCulture
                     'MonthName'       = $MonthName
@@ -324,7 +323,6 @@ function Get-Calendar {
                 # Print a year heading before January when year is specified and when the year is not already in month name
                 Write-Verbose 'Print normal row of months'
                 if ($PSBoundParameters.ContainsKey('Year') -and $MonthHeading -match "\b$($MonthNameArray[0])\b") {
-                    # Print the Zodiac animal for the previous full year with lunar calendars.
                     $Previousmonth = $PrintMonth - (1 + $MonthPerRow)
                     if ($Calendar -match 'Lunisolar' -and $Previousmonth -ge 12) {
                         Write-ZodiacAnimal -Calendar $Calendar -Year ( $ThisYear - 1 ) -Pretty $Pretty

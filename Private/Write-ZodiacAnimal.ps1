@@ -22,7 +22,7 @@ function Write-ZodiacAnimal {
     process {
         switch ($Calendar) {
             'JapaneseLunisolar' {
-                $Animal = @('Rat (子 -nezumi)', 'Ox (丑 -ushi)', 'Tiger (寅 -tora)', 'Rabbit (卯 -u)', 'Dragon (辰 -tatsu)', 'Snake (巳 -hebi)', 'Horse (午 -uma)', 'Goat (未 -hitsuji)', 'Monkey (申 -saru)', 'Rooster (酉 -tori)', 'Dog (戌 -inu)', 'Boar (亥 -inoshishi)')
+                $Animal = @('Rat (子 - nezumi)', 'Ox (丑 - ushi)', 'Tiger (寅 - tora)', 'Rabbit (卯 - u)', 'Dragon (辰 - tatsu)', 'Snake (巳 - hebi)', 'Horse (午 - uma)', 'Goat (未 - hitsuji)', 'Monkey (申 - saru)', 'Rooster (酉 - tori)', 'Dog (戌 - inu)', 'Boar (亥 - inoshishi)')
                 $AnimalIndex = (2018 + $Year - 4) % 12
                 break 
             }
@@ -32,12 +32,12 @@ function Write-ZodiacAnimal {
                 break 
             }
             'TaiwanLunisolar' { 
-                $Animal = @('Rat (鼠 -shǔ)', 'Ox (牛 -niú)', 'Tiger (虎 -hǔ)', 'Rabbit (兔 -tù)', 'Dragon (龙 -lóng)', 'Snake (蛇 -shé)', 'Horse (马 -mǎ)', 'Goat (羊 -yáng)', 'Monkey (猴 -hóu)', 'Rooster (鸡 -jī)', 'Dog (狗 -gǒu)', 'Pig (猪 -zhū)')
+                $Animal = @('Rat (鼠 - shǔ)', 'Ox (牛 - niú)', 'Tiger (虎 - hǔ)', 'Rabbit (兔 - tù)', 'Dragon (龙 - lóng)', 'Snake (蛇 - shé)', 'Horse (马 - mǎ)', 'Goat (羊 - yáng)', 'Monkey (猴 - hóu)', 'Rooster (鸡 - jī)', 'Dog (狗 - gǒu)', 'Pig (猪 - zhū)')
                 $AnimalIndex = (1911 + $Year - 4) % 12
                 break 
             }
             default { 
-                $Animal = @('Rat (鼠 -shǔ)', 'Ox (牛 -niú)', 'Tiger (虎 -hǔ)', 'Rabbit (兔 -tù)', 'Dragon (龙 -lóng)', 'Snake (蛇 -shé)', 'Horse (马 -mǎ)', 'Goat (羊 -yáng)', 'Monkey (猴 -hóu)', 'Rooster (鸡 -jī)', 'Dog (狗 -gǒu)', 'Pig (猪 -zhū)')
+                $Animal = @('Rat (鼠 - shǔ)', 'Ox (牛 - niú)', 'Tiger (虎 - hǔ)', 'Rabbit (兔 - tù)', 'Dragon (龙 - lóng)', 'Snake (蛇 - shé)', 'Horse (马 - mǎ)', 'Goat (羊 - yáng)', 'Monkey (猴 - hóu)', 'Rooster (鸡 - jī)', 'Dog (狗 - gǒu)', 'Pig (猪 - zhū)')
                 $AnimalIndex = ($Year - 4) % 12
                 
             } 
