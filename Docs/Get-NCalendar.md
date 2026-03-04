@@ -184,6 +184,8 @@ Note: This is not supported with Linux ncal command.
 
 ## PARAMETERS
 
+### -Month
+
 Specifies the required month. This must be specified as a number 0..13. An 'f' (forward by one year) or a 'p'
 (previous by one year) suffix can also be appended to the month number.
 
